@@ -21,10 +21,10 @@ export default function Resources() {
       <div className="mb-8">
         <p className="mb-1 text-xs font-medium uppercase tracking-[0.25em] text-yellow-600">Hub</p>
         <h1 className="font-display text-3xl font-black text-white">Resources</h1>
-        <p className="mt-1 text-sm text-slate-400">Communication channels, documents, and brand assets</p>
+        <p className="mt-1 text-sm text-slate-400">Communication channels, planning documents, and vendor files</p>
       </div>
 
-      {/* Slack channels */}
+      {/* Slack Channels */}
       <section className="mb-8">
         <div className="mb-4 flex items-center gap-2">
           <span className="text-lg">💬</span>
@@ -44,7 +44,7 @@ export default function Resources() {
                 <ActivityPip level={ch.activity} />
               </div>
               <p className="mb-3 text-xs leading-relaxed text-slate-500">{ch.description}</p>
-              <div className="text-xs text-slate-600">{ch.members.toLocaleString()} members</div>
+              <div className="text-xs text-slate-600">{ch.members} members</div>
             </div>
           ))}
         </div>
@@ -54,20 +54,18 @@ export default function Resources() {
       <section>
         <div className="mb-4 flex items-center gap-2">
           <span className="text-lg">📄</span>
-          <h2 className="text-base font-semibold text-white">Documents & Links</h2>
+          <h2 className="text-base font-semibold text-white">Planning Documents</h2>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {docs.map(doc => (
             <div
               key={doc.id}
               className="card cursor-pointer hover:border-yellow-700/40 hover:shadow-[0_0_20px_rgba(161,110,3,0.12)] transition-all duration-200 group"
             >
               <div className="flex gap-3">
-                <span className="mt-0.5 text-xl">{doc.type === 'doc' ? '📑' : '🔗'}</span>
+                <span className="mt-0.5 text-xl flex-shrink-0">{doc.type === 'doc' ? '📑' : '🔗'}</span>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-semibold text-white group-hover:text-yellow-300 transition-colors">
-                    {doc.title}
-                  </div>
+                  <div className="text-sm font-semibold text-white group-hover:text-yellow-300 transition-colors">{doc.title}</div>
                   <p className="mt-1 text-xs leading-relaxed text-slate-500 line-clamp-2">{doc.description}</p>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="badge-gold">{doc.category}</span>
@@ -81,7 +79,6 @@ export default function Resources() {
           ))}
         </div>
       </section>
-
     </div>
   )
 }
