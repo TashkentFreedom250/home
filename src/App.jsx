@@ -7,7 +7,7 @@ import Action from './pages/Action'
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/home">
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
