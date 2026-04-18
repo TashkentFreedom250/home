@@ -1,8 +1,6 @@
 // ── Freedom 250 — Data Layer ──────────────────────────────────────────────────
-// All event data in one place. Swap for real API endpoints when ready.
 
 const TARGET_DATE = new Date('2026-06-10T00:00:00')
-const TODAY       = new Date('2026-04-14')  // pin for consistent demo; remove in prod
 
 export function getCountdown() {
   const diff = Math.max(0, TARGET_DATE - new Date())
@@ -24,33 +22,6 @@ export function getEventDetails() {
     location:   'Outdoor Terrace & Grounds, Uzexpocentre',
     city:       'Tashkent, Uzbekistan',
     attendance: '2,000+',
-    description:
-      "A massive outdoor festival celebrating America's 250th Anniversary. " +
-      "The Uzexpocentre grounds will be transformed into a turnkey concert and " +
-      "high-end celebration space featuring live musical performances, speeches, " +
-      "and video presentations.",
-    highlights: [
-      {
-        icon: '🎤',
-        title: 'Live Concert',
-        detail: '12m × 10m stage, curated local acts with diplomatic collaboration history, opening act + headliner, DJ spinning Top 40 / Classic Rock / Pop.',
-      },
-      {
-        icon: '🍔',
-        title: 'Food Court',
-        detail: 'Bistro-lit terrace with picnic seating. KFC, Coca-Cola, plus an Uzbek Ethnic Food station with traditional Ikat and Adras fabrics.',
-      },
-      {
-        icon: '🏛️',
-        title: 'Freedom 250 Décor',
-        detail: 'Grand Entrance archway, red-white-blue pleated bunting around the full venue perimeter, "America 250" flags.',
-      },
-      {
-        icon: '⭐',
-        title: 'VIP / VVIP',
-        detail: "Red-carpet arrival, luxury lounge, premium carpeting, shaded high-peak marquees, plated hors d'oeuvres, professional waitstaff.",
-      },
-    ],
   }
 }
 
@@ -59,79 +30,123 @@ export function getEventDetails() {
 export function getContracts() {
   return [
     {
+      id: 'venue',
+      name: 'Venue',
+      status: 'in-progress',
+      statusLabel: 'Contract Out',
+      icon: '🏟️',
+      cost: '10 units',
+      description: 'Uzexpocentre outdoor terrace & grounds — exclusive use, setup days included',
+      nextStep: 'Awaiting signed contract from venue',
+    },
+    {
       id: 'av-stage',
       name: 'AV & Stage',
       status: 'awarded',
       statusLabel: 'Awarded',
       icon: '🎛️',
-      description: 'Audio visual, LED IMAG screens, 12m×10m stage, intelligent lighting, festival-grade PA, DJ booth',
+      cost: '27 units',
+      description: 'Stage, LED screens, PA system, lighting rig, DJ booth',
       awardDate: '2026-04-10',
-      deliverables: [
-        '12m × 10m outdoor stage with truss',
-        'High-resolution LED IMAG screens (2)',
-        'Intelligent stage lighting rig',
-        'Festival-grade PA system',
-        'DJ booth & monitoring',
-        'Backup AV components',
-      ],
-      nextStep: 'Finalize stage design & lighting plot by Apr 25',
+      nextStep: 'Finalize stage design & lighting plot — due Apr 25',
     },
     {
       id: 'event-mgmt',
       name: 'Event Management',
       status: 'in-progress',
-      statusLabel: 'Awarding Soon',
+      statusLabel: 'Quoted',
       icon: '📋',
-      description: 'Full event production — coordination, staffing, décor installation, Grand Entrance arch, day-of management',
-      targetAward: '2026-04-21',
-      deliverables: [
-        'Event coordination & production management',
-        'On-site staffing (50+ crew)',
-        'Grand Entrance branded archway',
-        'Décor: bunting, flags, signage, Ikat station styling',
-        'Day-of stage management',
-        'Vendor load-in / strike coordination',
-      ],
-      nextStep: 'Evaluate final proposals; target award by Apr 21',
-    },
-    {
-      id: 'artists',
-      name: 'Artists & Entertainment',
-      status: 'in-progress',
-      statusLabel: 'In Discussions',
-      icon: '🎵',
-      description: 'Headliner, opening act, DJ, and National Anthem performers (US + Uzbekistan anthems)',
-      targetAward: '2026-04-28',
-      deliverables: [
-        'Headliner act (1) — 45-minute set',
-        'Opening act (1) — 30-minute set',
-        'DJ — warm-up + open-format sets (3+ hours total)',
-        'National Anthem: Republic of Uzbekistan vocalist',
-        'National Anthem: United States vocalist',
-      ],
-      nextStep: 'Confirm headliner MOU; shortlist opening act by Apr 21',
+      cost: '37 units',
+      description: 'Full production — tent build, staffing, décor, day-of management',
+      nextStep: 'Hash out details with team this week',
     },
     {
       id: 'power',
-      name: 'Power & Generator',
-      status: 'not-started',
-      statusLabel: 'Not Yet Sourced',
+      name: 'Power',
+      status: 'awarded',
+      statusLabel: 'Settled',
       icon: '⚡',
-      description: 'Primary + backup generators for stage, AV, lighting, food court, and VIP areas',
-      targetAward: '2026-04-21',
-      deliverables: [
-        'Primary generator (sufficient for full stage + AV + lighting)',
-        'Backup / redundancy generator',
-        'Distribution panels & breaker boxes',
-        'Cable runs to stage, food court, VIP',
-        'On-site power technician during event',
-      ],
-      nextStep: 'Source vendors & request quotes immediately — CRITICAL',
+      cost: '1 unit',
+      description: 'Negotiated and included in venue agreement',
+      awardDate: '2026-04-18',
+      nextStep: 'Confirm technical specs with AV team',
+    },
+    {
+      id: 'artists',
+      name: 'Artists',
+      status: 'in-progress',
+      statusLabel: '6 of 8 Confirmed',
+      icon: '🎵',
+      cost: 'TBD',
+      description: '6 artists confirmed and ready. 2 unavailable — sourcing replacements.',
+      nextStep: 'Sign contracts for all confirmed artists; find 2 replacements',
     },
   ]
 }
 
-// ── 8-Week Countdown Timeline ────────────────────────────────────────────────
+// ── Budget ───────────────────────────────────────────────────────────────────
+
+export function getBudget() {
+  return {
+    available: 65,
+    note: 'Includes carry-forward from prior year. Figures in budget units.',
+    breakdown: [
+      { label: 'Venue',            amount: 10, status: 'pending'  },
+      { label: 'AV & Stage',       amount: 27, status: 'awarded'  },
+      { label: 'Event Management', amount: 37, status: 'quoted'   },
+      { label: 'Power',            amount: 1,  status: 'awarded'  },
+    ],
+  }
+}
+
+// ── Quick Stats ──────────────────────────────────────────────────────────────
+
+export function getStats() {
+  const diff = Math.max(0, TARGET_DATE - new Date())
+  const days = Math.floor(diff / 86_400_000)
+  return {
+    attendance: { value: '2,000+', change: 'Expected guests'      },
+    contracts:  { value: '2 of 5', change: 'Contracts settled'    },
+    daysLeft:   { value: String(days), change: 'Days to showtime'  },
+    budget:     { value: '~65',    change: 'Units available'       },
+  }
+}
+
+// ── Progress / Workstreams ───────────────────────────────────────────────────
+
+export function getProgress() {
+  return {
+    overall: 38,
+    initiatives: [
+      { id: 1,  name: 'AV & Stage',             progress: 75, status: 'ahead',    owner: 'AV Contractor',  deadline: 'Jun 8',  note: 'Contract awarded. Design & lighting plot next.' },
+      { id: 2,  name: 'Venue',                   progress: 40, status: 'on-track', owner: 'Chair',          deadline: 'Apr 25', note: 'Contract out — awaiting signature.' },
+      { id: 3,  name: 'Event Management',        progress: 30, status: 'on-track', owner: 'Chair',          deadline: 'Apr 25', note: 'Quoted at 37 units. Detailing scope this week.' },
+      { id: 4,  name: 'Artists & Entertainment', progress: 65, status: 'on-track', owner: 'Events Team',    deadline: 'Apr 30', note: '6 of 8 confirmed. 2 replacements needed.' },
+      { id: 5,  name: 'Power',                   progress: 85, status: 'ahead',    owner: 'Venue / Chair',  deadline: 'Done',   note: 'Negotiated with venue. 1 unit.' },
+      { id: 6,  name: 'Program Rundown',         progress: 10, status: 'at-risk',  owner: 'Chair',          deadline: 'May 25', note: 'Not started. Draft needed by end of Week 3.' },
+      { id: 7,  name: 'Guest List & CRM',        progress: 5,  status: 'at-risk',  owner: 'Protocol Team',  deadline: 'May 25', note: 'Not started. VIP/VVIP list must begin this week.' },
+      { id: 8,  name: 'Food & Catering',         progress: 40, status: 'on-track', owner: 'Catering Team',  deadline: 'May 25', note: 'KFC & Coca-Cola confirmed. Uzbek station TBD.' },
+      { id: 9,  name: 'Décor & Branding',        progress: 20, status: 'on-track', owner: 'Design Team',    deadline: 'Jun 6',  note: 'Pending Event Management award to proceed.' },
+      { id: 10, name: 'Security & Logistics',    progress: 10, status: 'on-track', owner: 'RSO',            deadline: 'Jun 8',  note: 'RSO meeting to be scheduled.' },
+    ],
+    milestones: [
+      { id: 1, name: 'AV & Stage contract awarded',        date: '2026-04-10', status: 'completed' },
+      { id: 2, name: 'KFC & Coca-Cola agreements signed',  date: '2026-04-01', status: 'completed' },
+      { id: 3, name: 'Power negotiated with venue',        date: '2026-04-18', status: 'completed' },
+      { id: 4, name: '6 of 8 artists confirmed',          date: '2026-04-18', status: 'completed' },
+      { id: 5, name: 'Venue contract signed',              date: '2026-04-25', status: 'upcoming'  },
+      { id: 6, name: 'Event Management contract awarded',  date: '2026-04-25', status: 'upcoming'  },
+      { id: 7, name: 'All artist contracts signed',        date: '2026-04-30', status: 'upcoming'  },
+      { id: 8, name: 'Program rundown complete draft',     date: '2026-05-04', status: 'upcoming'  },
+      { id: 9, name: 'All-vendor production meeting',      date: '2026-05-08', status: 'upcoming'  },
+      { id: 10, name: 'VIP guest list finalized',          date: '2026-05-25', status: 'upcoming'  },
+      { id: 11, name: 'Full technical rehearsal',          date: '2026-06-07', status: 'upcoming'  },
+      { id: 12, name: '🇺🇸 FREEDOM 250 — SHOWTIME',        date: '2026-06-10', status: 'upcoming'  },
+    ],
+  }
+}
+
+// ── 8-Week Timeline ──────────────────────────────────────────────────────────
 
 export function getTimeline() {
   return [
@@ -141,14 +156,14 @@ export function getTimeline() {
       dates: 'Apr 14 – 20',
       phase: 'current',
       tasks: [
-        { task: 'Award Event Management contract',                              status: 'in-progress', critical: true  },
-        { task: 'Source & contract power/generator vendor',                     status: 'not-started', critical: true  },
-        { task: 'Finalize artist contracts — headliner + opening act',          status: 'in-progress', critical: true  },
-        { task: 'Confirm DJ booking & contract',                                status: 'in-progress', critical: false },
-        { task: 'Begin drafting minute-by-minute program rundown',              status: 'not-started', critical: true  },
-        { task: 'Compile initial guest list (VIP, VVIP, General)',              status: 'not-started', critical: false },
-        { task: 'Design invitations — digital & printed versions',              status: 'not-started', critical: false },
-        { task: 'Schedule security planning meeting with RSO',                  status: 'not-started', critical: true  },
+        { task: 'A/V contract signed',                                       status: 'completed',   critical: false },
+        { task: 'Power negotiated with venue',                               status: 'completed',   critical: false },
+        { task: '6 of 8 artists confirmed',                                  status: 'completed',   critical: false },
+        { task: 'Hash out Event Management details & finalize scope',        status: 'in-progress', critical: true  },
+        { task: 'Begin CRM — compile VIP / VVIP invite list',               status: 'in-progress', critical: true  },
+        { task: 'Confirm venue contract signed',                             status: 'in-progress', critical: true  },
+        { task: 'Source 2 replacement artists',                             status: 'not-started', critical: true  },
+        { task: 'Schedule RSO security planning meeting',                   status: 'not-started', critical: true  },
       ],
     },
     {
@@ -157,14 +172,12 @@ export function getTimeline() {
       dates: 'Apr 21 – 27',
       phase: 'upcoming',
       tasks: [
-        { task: 'Event Management company kickoff meeting',                     status: 'not-started', critical: true  },
-        { task: 'Finalize stage design & layout with AV contractor',            status: 'not-started', critical: true  },
-        { task: 'Lighting plot & sound design review',                          status: 'not-started', critical: false },
-        { task: 'Finalize décor concept — Grand Entrance arch, bunting, flags', status: 'not-started', critical: false },
-        { task: 'Food court layout & menu approval (KFC, Coke, Uzbek station)', status: 'not-started', critical: false },
-        { task: 'VIP / VVIP zone layout & furniture plan',                      status: 'not-started', critical: false },
-        { task: 'Select & confirm MC / host',                                   status: 'not-started', critical: false },
-        { task: 'Begin distributing invitations',                               status: 'not-started', critical: false },
+        { task: 'Event Management kickoff meeting — full scope review',     status: 'not-started', critical: true  },
+        { task: 'Finalize stage layout & lighting plot with AV contractor', status: 'not-started', critical: true  },
+        { task: 'Finalize décor concept — arch, bunting, flags',           status: 'not-started', critical: false },
+        { task: 'Food court layout & menu approval',                        status: 'not-started', critical: false },
+        { task: 'VIP / VVIP zone layout & furniture plan',                 status: 'not-started', critical: false },
+        { task: 'Begin distributing invitations',                           status: 'not-started', critical: false },
       ],
     },
     {
@@ -173,14 +186,11 @@ export function getTimeline() {
       dates: 'Apr 28 – May 4',
       phase: 'upcoming',
       tasks: [
-        { task: 'Complete minute-by-minute program rundown — FULL DRAFT',       status: 'not-started', critical: true  },
-        { task: "Draft Ambassador's welcoming remarks",                         status: 'not-started', critical: false },
-        { task: 'Approve performer set lists — opening act & headliner',        status: 'not-started', critical: false },
-        { task: 'Confirm National Anthem performers (US + Uzbekistan)',          status: 'not-started', critical: true  },
-        { task: 'Create vendor load-in & strike schedule',                      status: 'not-started', critical: false },
-        { task: 'Security walk-through at Uzexpocentre with RSO',               status: 'not-started', critical: true  },
-        { task: 'Contract photographer & videographer',                         status: 'not-started', critical: false },
-        { task: 'Submit permit applications to Tashkent city authorities',      status: 'not-started', critical: true  },
+        { task: 'Complete program rundown — full draft',                    status: 'not-started', critical: true  },
+        { task: 'Confirm all remaining artist contracts',                   status: 'not-started', critical: true  },
+        { task: 'Security walk-through at Uzexpocentre with RSO',          status: 'not-started', critical: true  },
+        { task: 'Submit permit applications',                               status: 'not-started', critical: true  },
+        { task: 'Contract photographer & videographer',                    status: 'not-started', critical: false },
       ],
     },
     {
@@ -189,14 +199,10 @@ export function getTimeline() {
       dates: 'May 5 – 11',
       phase: 'upcoming',
       tasks: [
-        { task: 'All-vendor production meeting (AV, Event Mgmt, Catering, Power)', status: 'not-started', critical: true  },
-        { task: 'Power infrastructure test at venue',                            status: 'not-started', critical: true  },
-        { task: 'General admission RSVP deadline',                               status: 'not-started', critical: false },
-        { task: 'First draft VIP / VVIP guest list for Ambassador review',       status: 'not-started', critical: false },
-        { task: 'Launch social media countdown campaign',                        status: 'not-started', critical: false },
-        { task: 'Begin volunteer recruitment',                                   status: 'not-started', critical: false },
-        { task: 'Arrange medical / first-aid coverage',                          status: 'not-started', critical: false },
-        { task: 'Finalize transportation & parking plan',                        status: 'not-started', critical: false },
+        { task: 'All-vendor production meeting at Uzexpocentre',           status: 'not-started', critical: true  },
+        { task: 'VIP / VVIP guest list first draft to Ambassador',         status: 'not-started', critical: false },
+        { task: 'General admission RSVP deadline',                         status: 'not-started', critical: false },
+        { task: 'Volunteer recruitment begins',                            status: 'not-started', critical: false },
       ],
     },
     {
@@ -205,12 +211,10 @@ export function getTimeline() {
       dates: 'May 12 – 18',
       phase: 'upcoming',
       tasks: [
-        { task: 'Full venue walkthrough — all vendors present',                  status: 'not-started', critical: true  },
-        { task: 'Review technical riders with all performers',                   status: 'not-started', critical: true  },
-        { task: 'Create sound-check schedule for all acts',                      status: 'not-started', critical: false },
-        { task: 'Prepare & load LED screen content (videos, logos, graphics)',   status: 'not-started', critical: false },
-        { task: 'Confirm all décor materials ordered and delivery dates',        status: 'not-started', critical: false },
-        { task: 'Finalize waste management & cleanup plan',                      status: 'not-started', critical: false },
+        { task: 'Full venue walkthrough — all vendors present',            status: 'not-started', critical: true  },
+        { task: 'Technical rider review with all performers',              status: 'not-started', critical: true  },
+        { task: 'LED screen content prepared (videos, logos, graphics)',   status: 'not-started', critical: false },
+        { task: 'All décor materials ordered with delivery dates',        status: 'not-started', critical: false },
       ],
     },
     {
@@ -219,13 +223,10 @@ export function getTimeline() {
       dates: 'May 19 – 25',
       phase: 'upcoming',
       tasks: [
-        { task: 'VIP / VVIP guest list FINALIZED — no changes after this',       status: 'not-started', critical: true  },
-        { task: 'VVIP protocol briefing for all staff',                          status: 'not-started', critical: true  },
-        { task: 'Program rundown FINAL — approved by Ambassador',                status: 'not-started', critical: true  },
-        { task: 'Distribute rehearsal schedule to all parties',                  status: 'not-started', critical: false },
-        { task: 'All Tashkent city permits confirmed & in hand',                 status: 'not-started', critical: true  },
-        { task: 'Emergency & weather contingency plan finalized',                status: 'not-started', critical: false },
-        { task: "Ambassador's speech finalized & loaded to teleprompter",        status: 'not-started', critical: false },
+        { task: 'VIP / VVIP guest list FINAL — no changes after this',    status: 'not-started', critical: true  },
+        { task: 'Program rundown FINAL — Ambassador approved',             status: 'not-started', critical: true  },
+        { task: 'All permits confirmed and in hand',                       status: 'not-started', critical: true  },
+        { task: 'Emergency & weather contingency plan done',               status: 'not-started', critical: false },
       ],
     },
     {
@@ -234,12 +235,10 @@ export function getTimeline() {
       dates: 'May 26 – Jun 1',
       phase: 'upcoming',
       tasks: [
-        { task: 'All décor materials delivered to Uzexpocentre',                 status: 'not-started', critical: true  },
-        { task: 'AV equipment pre-check & staging in warehouse',                 status: 'not-started', critical: true  },
-        { task: 'Generator delivered & power testing at venue',                  status: 'not-started', critical: true  },
-        { task: 'Catering dry run — all vendors prepare sample menus',           status: 'not-started', critical: false },
-        { task: 'Volunteer briefing & role assignments distributed',             status: 'not-started', critical: false },
-        { task: 'Media accreditation deadline',                                  status: 'not-started', critical: false },
+        { task: 'All décor delivered to Uzexpocentre',                    status: 'not-started', critical: true  },
+        { task: 'AV equipment pre-check & staging',                       status: 'not-started', critical: true  },
+        { task: 'Catering dry run — sample menus',                        status: 'not-started', critical: false },
+        { task: 'Media accreditation deadline',                           status: 'not-started', critical: false },
       ],
     },
     {
@@ -248,89 +247,74 @@ export function getTimeline() {
       dates: 'Jun 2 – 10',
       phase: 'upcoming',
       tasks: [
-        { task: 'Jun 2–3: Stage construction at Uzexpocentre',                  status: 'not-started', critical: true  },
-        { task: 'Jun 4: Primary & backup generators installed, power live',      status: 'not-started', critical: true  },
-        { task: 'Jun 5: AV, LED screens, lighting rig installed',               status: 'not-started', critical: true  },
-        { task: 'Jun 6: Décor, food court, VIP zone full build-out',            status: 'not-started', critical: true  },
-        { task: 'Jun 7: FULL TECHNICAL REHEARSAL — all systems, all acts',      status: 'not-started', critical: true  },
-        { task: 'Jun 8: DRESS REHEARSAL — complete run-through, final punch',   status: 'not-started', critical: true  },
-        { task: 'Jun 9: Final inspection, sound checks, catering load-in',      status: 'not-started', critical: true  },
-        { task: 'Jun 10: 🇺🇸 FREEDOM 250 — SHOWTIME 🎉',                       status: 'not-started', critical: true  },
+        { task: 'Jun 2–3: Stage construction',                            status: 'not-started', critical: true  },
+        { task: 'Jun 4: Venue power live — full test',                    status: 'not-started', critical: true  },
+        { task: 'Jun 5: AV, LED screens, lighting rig installed',        status: 'not-started', critical: true  },
+        { task: 'Jun 6: Décor, food court, VIP zone full build-out',     status: 'not-started', critical: true  },
+        { task: 'Jun 7: FULL TECHNICAL REHEARSAL',                        status: 'not-started', critical: true  },
+        { task: 'Jun 8: DRESS REHEARSAL — complete run-through',         status: 'not-started', critical: true  },
+        { task: 'Jun 9: Final checks, sound, catering load-in',          status: 'not-started', critical: true  },
+        { task: 'Jun 10: 🇺🇸 FREEDOM 250 — SHOWTIME 🎉',                 status: 'not-started', critical: true  },
       ],
     },
   ]
 }
 
-// ── Draft Program Rundown ────────────────────────────────────────────────────
+// ── Program Rundown ──────────────────────────────────────────────────────────
 
 export function getProgramRundown() {
   return {
     status: 'draft',
-    lastUpdated: '2026-04-14',
-    note: 'Subject to change. Final version requires Ambassador approval by May 25.',
+    lastUpdated: '2026-04-18',
+    note: 'Draft — subject to change. Ambassador approval required by May 25.',
     blocks: [
-      { time: '15:00', duration: '30 min', item: 'Venue opens — VIP / VVIP early arrival & red carpet',               category: 'logistics'     },
-      { time: '15:30', duration: '—',      item: 'General admission gates open',                                       category: 'logistics'     },
-      { time: '15:30', duration: '60 min', item: 'DJ warm-up set — American classics, Top 40, crowd build',           category: 'entertainment' },
-      { time: '16:30', duration: '5 min',  item: 'MC welcome & Freedom 250 introduction',                              category: 'ceremony'      },
-      { time: '16:35', duration: '3 min',  item: '🇺🇿  National Anthem — Republic of Uzbekistan',                      category: 'ceremony'      },
-      { time: '16:38', duration: '3 min',  item: '🇺🇸  National Anthem — United States of America',                    category: 'ceremony'      },
-      { time: '16:41', duration: '15 min', item: "Ambassador's Welcoming Remarks",                                     category: 'ceremony'      },
-      { time: '16:56', duration: '10 min', item: 'Distinguished Guest Remarks (Uzbek officials)',                       category: 'ceremony'      },
-      { time: '17:06', duration: '10 min', item: 'America 250 Video Presentation — LED screens',                       category: 'ceremony'      },
-      { time: '17:16', duration: '4 min',  item: 'MC introduces Opening Act',                                          category: 'ceremony'      },
-      { time: '17:20', duration: '30 min', item: '🎤  OPENING ACT — Live Performance',                                category: 'entertainment' },
-      { time: '17:50', duration: '10 min', item: 'MC interlude — sponsor acknowledgments, cultural moment',            category: 'ceremony'      },
-      { time: '18:00', duration: '45 min', item: '🎤  HEADLINER — Main Performance',                                  category: 'entertainment' },
-      { time: '18:45', duration: '15 min', item: 'DJ transition set',                                                  category: 'entertainment' },
-      { time: '19:00', duration: '15 min', item: '🥂  Freedom 250 Toast & Anniversary Celebration Moment',             category: 'ceremony'      },
-      { time: '19:15', duration: '75 min', item: 'DJ set — open format American hits, dance floor open',               category: 'entertainment' },
-      { time: '20:30', duration: '—',      item: 'Event closes — orderly guest departure begins',                      category: 'logistics'     },
+      { time: '15:00', duration: '30 min', item: 'Venue opens — VIP / VVIP arrival & red carpet',            category: 'logistics'     },
+      { time: '15:30', duration: '—',      item: 'General admission gates open',                              category: 'logistics'     },
+      { time: '15:30', duration: '60 min', item: 'DJ warm-up set — American classics, Top 40',               category: 'entertainment' },
+      { time: '16:30', duration: '5 min',  item: 'MC welcome & Freedom 250 introduction',                     category: 'ceremony'      },
+      { time: '16:35', duration: '3 min',  item: '🇺🇿 National Anthem — Uzbekistan',                          category: 'ceremony'      },
+      { time: '16:38', duration: '3 min',  item: '🇺🇸 National Anthem — United States',                       category: 'ceremony'      },
+      { time: '16:41', duration: '15 min', item: "Ambassador's Welcoming Remarks",                            category: 'ceremony'      },
+      { time: '16:56', duration: '10 min', item: 'Distinguished Guest Remarks',                               category: 'ceremony'      },
+      { time: '17:06', duration: '10 min', item: 'America 250 Video Presentation',                            category: 'ceremony'      },
+      { time: '17:16', duration: '4 min',  item: 'MC introduces Opening Act',                                 category: 'ceremony'      },
+      { time: '17:20', duration: '30 min', item: '🎤 OPENING ACT — Live Performance',                        category: 'entertainment' },
+      { time: '17:50', duration: '10 min', item: 'MC interlude — acknowledgments',                            category: 'ceremony'      },
+      { time: '18:00', duration: '45 min', item: '🎤 HEADLINER — Main Performance',                          category: 'entertainment' },
+      { time: '18:45', duration: '15 min', item: 'DJ transition set',                                         category: 'entertainment' },
+      { time: '19:00', duration: '15 min', item: '🥂 Freedom 250 Toast & Anniversary Moment',                category: 'ceremony'      },
+      { time: '19:15', duration: '75 min', item: 'DJ — open format, dance floor open',                        category: 'entertainment' },
+      { time: '20:30', duration: '—',      item: 'Event closes — guest departure',                            category: 'logistics'     },
     ],
   }
 }
 
-// ── Progress / Workstreams ───────────────────────────────────────────────────
+// ── Actions ──────────────────────────────────────────────────────────────────
 
-export function getStats() {
-  return {
-    attendance:  { value: '2,000+',  change: 'Expected guests' },
-    contracts:   { value: '1 of 4',  change: 'Awarded'         },
-    daysLeft:    { value: '56',      change: 'Until showtime'  },
-    critical:    { value: '4',       change: 'Actions this wk' },
-  }
+export function getActions() {
+  return [
+    { id: 1, icon: '📋', priority: 'high',   done: false, title: 'Hash out Event Management details',  description: 'Finalize full scope — tent, staffing, décor, day-of logistics. Align on timeline.', cta: 'Meet with Team', deadline: 'Apr 25' },
+    { id: 2, icon: '📨', priority: 'high',   done: false, title: 'CRM — Compile VIP Invite List',      description: 'Work with Protocol to build the VIP / VVIP guest list. Diplomats, officials, partners.', cta: 'Start List',     deadline: 'May 1'  },
+    { id: 3, icon: '✍️', priority: 'high',   done: false, title: 'Finalize All Contracts',             description: 'Venue, artists (6 confirmed), event management — all agreements signed and filed.', cta: 'Review Status',  deadline: 'Apr 30' },
+    { id: 4, icon: '🎵', priority: 'medium', done: false, title: 'Source 2 Replacement Artists',       description: '2 artists unavailable. Identify and confirm replacements to complete the lineup.', cta: 'Source Now',     deadline: 'Apr 30' },
+    { id: 5, icon: '🔒', priority: 'medium', done: false, title: 'Schedule RSO Security Meeting',      description: 'Coordinate with Regional Security Office — venue walk-through & safety plan.', cta: 'Schedule',       deadline: 'Apr 25' },
+    { id: 6, icon: '📝', priority: 'medium', done: false, title: 'Begin Program Rundown Draft',        description: 'First draft of minute-by-minute event flow. Required for Ambassador review by May 25.', cta: 'Start Draft',    deadline: 'May 4'  },
+  ]
 }
 
-export function getProgress() {
-  return {
-    overall: 28,
-    initiatives: [
-      { id: 1, name: 'AV & Stage',              progress: 70, status: 'ahead',    owner: 'AV Contractor',   deadline: 'Jun 8',  note: 'Contract awarded. Design & lighting plot next.' },
-      { id: 2, name: 'Event Management',         progress: 25, status: 'at-risk',  owner: 'Chair (You)',     deadline: 'Apr 21', note: 'Evaluating proposals. Must award by Apr 21.' },
-      { id: 3, name: 'Artists & Entertainment',   progress: 35, status: 'on-track', owner: 'Events Team',     deadline: 'Apr 28', note: 'Headliner in discussions. Opening act TBD.' },
-      { id: 4, name: 'Power & Generator',         progress: 5,  status: 'at-risk',  owner: 'Chair (You)',     deadline: 'Apr 21', note: 'Not yet sourced. CRITICAL — source immediately.' },
-      { id: 5, name: 'Program Rundown',           progress: 10, status: 'at-risk',  owner: 'Chair (You)',     deadline: 'May 25', note: 'Draft needed by end of Week 3. Ambassador approval by May 25.' },
-      { id: 6, name: 'Guest List & Invitations',  progress: 5,  status: 'on-track', owner: 'Protocol Team',   deadline: 'May 25', note: 'Compilation not started. Invitations need design.' },
-      { id: 7, name: 'Food & Catering',           progress: 40, status: 'on-track', owner: 'Catering Team',   deadline: 'May 25', note: 'KFC & Coca-Cola confirmed. Uzbek station vendor needed.' },
-      { id: 8, name: 'Décor & Branding',          progress: 15, status: 'on-track', owner: 'Design Team',     deadline: 'Jun 6',  note: 'Concept phase. Pending Event Mgmt award for execution.' },
-      { id: 9, name: 'VIP / VVIP Protocol',       progress: 15, status: 'on-track', owner: 'Protocol Team',   deadline: 'May 25', note: 'Red carpet, marquees, catering plan in early stages.' },
-      { id: 10, name: 'Security & Logistics',     progress: 10, status: 'on-track', owner: 'RSO / Security',  deadline: 'Jun 8',  note: 'RSO meeting needed this week to start planning.' },
-    ],
-    milestones: [
-      { id: 1, name: 'AV & Stage contract awarded',                date: '2026-04-10', status: 'completed' },
-      { id: 2, name: 'KFC & Coca-Cola vendor agreements',          date: '2026-04-01', status: 'completed' },
-      { id: 3, name: 'Event Management contract awarded',          date: '2026-04-21', status: 'upcoming'  },
-      { id: 4, name: 'Power vendor secured',                       date: '2026-04-21', status: 'upcoming'  },
-      { id: 5, name: 'All artist contracts signed',                date: '2026-04-28', status: 'upcoming'  },
-      { id: 6, name: 'Program rundown complete draft',             date: '2026-05-04', status: 'upcoming'  },
-      { id: 7, name: 'All-vendor production meeting',              date: '2026-05-08', status: 'upcoming'  },
-      { id: 8, name: 'VIP guest list finalized',                   date: '2026-05-25', status: 'upcoming'  },
-      { id: 9, name: 'Program rundown — Ambassador approved',      date: '2026-05-25', status: 'upcoming'  },
-      { id: 10, name: 'Full technical rehearsal',                  date: '2026-06-07', status: 'upcoming'  },
-      { id: 11, name: 'Dress rehearsal & final walk-through',      date: '2026-06-08', status: 'upcoming'  },
-      { id: 12, name: '🇺🇸  FREEDOM 250 — SHOWTIME',               date: '2026-06-10', status: 'upcoming'  },
-    ],
-  }
+// ── Upcoming Events ──────────────────────────────────────────────────────────
+
+export function getUpcomingEvents() {
+  return [
+    { id: 1, name: 'Event Management Detail Meeting',    date: '2026-04-25', type: 'In-Person', location: 'US Embassy',              attendees:   6 },
+    { id: 2, name: 'Venue Contract Sign-off',            date: '2026-04-25', type: 'Internal',  location: 'Procurement',             attendees:   3 },
+    { id: 3, name: 'AV Contractor Design Review',        date: '2026-04-25', type: 'In-Person', location: 'Uzexpocentre',            attendees:  12 },
+    { id: 4, name: 'RSO Security Planning Meeting',      date: '2026-04-28', type: 'In-Person', location: 'US Embassy',              attendees:   8 },
+    { id: 5, name: 'All-Vendor Production Meeting',      date: '2026-05-08', type: 'In-Person', location: 'Uzexpocentre',            attendees:  30 },
+    { id: 6, name: 'Full Venue Walkthrough',             date: '2026-05-15', type: 'In-Person', location: 'Uzexpocentre',            attendees:  25 },
+    { id: 7, name: 'Full Technical Rehearsal',           date: '2026-06-07', type: 'In-Person', location: 'Uzexpocentre',            attendees:  60 },
+    { id: 8, name: '🇺🇸 FREEDOM 250 — SHOWTIME',         date: '2026-06-10', type: 'In-Person', location: 'Uzexpocentre, Tashkent', attendees: 2000 },
+  ]
 }
 
 // ── Slack Channels ───────────────────────────────────────────────────────────
@@ -338,12 +322,12 @@ export function getProgress() {
 export function getSlackChannels() {
   return [
     { id: 1, name: '#freedom-250-general',  description: 'Main coordination — announcements, decisions, blockers',    members: 89,  activity: 'high'   },
-    { id: 2, name: '#av-stage',             description: 'AV contractor comms, stage design, tech specs, LED content', members: 18,  activity: 'high'   },
+    { id: 2, name: '#av-stage',             description: 'AV contractor comms, stage design, tech specs',             members: 18,  activity: 'high'   },
     { id: 3, name: '#event-management',     description: 'Event company coordination, staffing, décor execution',     members: 22,  activity: 'medium' },
-    { id: 4, name: '#entertainment',        description: 'Artist negotiations, set lists, DJ, National Anthems',       members: 15,  activity: 'high'   },
-    { id: 5, name: '#vip-protocol',         description: 'Guest list, red carpet, VIP catering, VVIP escort plan',    members: 20,  activity: 'medium' },
-    { id: 6, name: '#food-vendors',         description: 'KFC, Coca-Cola, Uzbek Food station, menu approvals',        members: 12,  activity: 'medium' },
-    { id: 7, name: '#power-logistics',      description: 'Generator sourcing, power distribution, cable runs',        members: 8,   activity: 'low'    },
+    { id: 4, name: '#entertainment',        description: 'Artist negotiations, set lists, DJ, National Anthems',      members: 15,  activity: 'high'   },
+    { id: 5, name: '#vip-protocol',         description: 'Guest list, CRM, red carpet, VVIP escort plan',             members: 20,  activity: 'medium' },
+    { id: 6, name: '#food-vendors',         description: 'KFC, Coca-Cola, Uzbek food station, menus',                 members: 12,  activity: 'medium' },
+    { id: 7, name: '#power-logistics',      description: 'Venue power specs, distribution, AV coordination',          members: 8,   activity: 'low'    },
     { id: 8, name: '#security-rso',         description: 'RSO coordination, perimeter plan, crowd management',        members: 11,  activity: 'low'    },
   ]
 }
@@ -352,41 +336,13 @@ export function getSlackChannels() {
 
 export function getDocuments() {
   return [
-    { id: 1, type: 'doc',  title: 'Program Rundown (DRAFT)',         description: 'Minute-by-minute show flow — VIP arrival through event close',              updated: '2026-04-14', category: 'Program'       },
-    { id: 2, type: 'doc',  title: 'Venue Layout — Uzexpocentre',     description: 'Floor plan: stage, food court, VIP zones, Grand Entrance, power runs',      updated: '2026-04-10', category: 'Logistics'     },
-    { id: 3, type: 'doc',  title: 'AV & Stage Technical Specs',       description: 'Stage dimensions, PA coverage, LED specs, lighting plot, DJ booth rider',   updated: '2026-04-10', category: 'AV / Tech'     },
-    { id: 4, type: 'doc',  title: 'VIP / VVIP Protocol Guide',        description: 'Red carpet procedure, seating chart, catering menu, VVIP escort plan',     updated: '2026-04-05', category: 'Protocol'      },
-    { id: 5, type: 'doc',  title: 'Vendor & Catering Contracts',      description: 'Signed agreements — KFC, Coca-Cola, Uzbek Food station operator',          updated: '2026-04-01', category: 'Procurement'   },
-    { id: 6, type: 'doc',  title: '8-Week Countdown Master Plan',     description: 'Week-by-week milestones, critical path, and responsibility matrix',        updated: '2026-04-14', category: 'Planning'      },
-    { id: 7, type: 'link', title: 'America 250 Brand Guidelines',     description: 'Official brand colors, flag specs, logo usage, bunting standards',          updated: '2026-03-15', category: 'Design'        },
-    { id: 8, type: 'doc',  title: 'Security & Emergency Plan',        description: 'Perimeter, crowd management, medical, weather contingency, evacuation',    updated: '2026-04-01', category: 'Security'      },
-  ]
-}
-
-// ── Actions ──────────────────────────────────────────────────────────────────
-
-export function getActions() {
-  return [
-    { id: 1, title: 'Award Event Management Contract',  description: 'Evaluate final proposals and sign — blocks décor, staffing, and day-of ops',  priority: 'high',   cta: 'Review Bids',   icon: '📋', deadline: 'Apr 21' },
-    { id: 2, title: 'Secure Power / Generator Vendor',  description: 'Source quotes, select vendor, sign contract — no power = no show',             priority: 'high',   cta: 'Source Now',    icon: '⚡', deadline: 'Apr 21' },
-    { id: 3, title: 'Finalize Headliner Contract',      description: 'Close MOU with headliner artist, confirm 45-min set, technical rider',        priority: 'high',   cta: 'Follow Up',     icon: '🎤', deadline: 'Apr 21' },
-    { id: 4, title: 'Schedule RSO Security Meeting',    description: 'Coordinate with Regional Security Office for venue walk-through & plan',       priority: 'high',   cta: 'Schedule',      icon: '🔒', deadline: 'Apr 18' },
-    { id: 5, title: 'Draft Program Rundown',            description: 'First draft of minute-by-minute event flow — VIP arrival through close',       priority: 'medium', cta: 'Start Draft',   icon: '📝', deadline: 'Apr 27' },
-    { id: 6, title: 'Begin Guest List Compilation',     description: 'Coordinate with Protocol for VIP, VVIP, diplomatic corps, general guest lists', priority: 'medium', cta: 'Start List',    icon: '📨', deadline: 'Apr 27' },
-  ]
-}
-
-// ── Upcoming Events ──────────────────────────────────────────────────────────
-
-export function getUpcomingEvents() {
-  return [
-    { id: 1, name: 'RSO Security Planning Meeting',       date: '2026-04-18', type: 'In-Person', location: 'US Embassy',               attendees:   8 },
-    { id: 2, name: 'Event Management Contract Award',     date: '2026-04-21', type: 'Internal',  location: 'Procurement',              attendees:   4 },
-    { id: 3, name: 'AV Contractor Design Review',         date: '2026-04-25', type: 'In-Person', location: 'Uzexpocentre',             attendees:  12 },
-    { id: 4, name: 'All-Vendor Production Meeting',       date: '2026-05-08', type: 'In-Person', location: 'Uzexpocentre',             attendees:  30 },
-    { id: 5, name: 'Full Venue Walkthrough',              date: '2026-05-15', type: 'In-Person', location: 'Uzexpocentre',             attendees:  25 },
-    { id: 6, name: 'Full Technical Rehearsal',            date: '2026-06-07', type: 'In-Person', location: 'Uzexpocentre',             attendees:  60 },
-    { id: 7, name: 'Dress Rehearsal & Final Walk-through',date: '2026-06-08', type: 'In-Person', location: 'Uzexpocentre',             attendees:  60 },
-    { id: 8, name: '🇺🇸  FREEDOM 250 — SHOWTIME',         date: '2026-06-10', type: 'In-Person', location: 'Uzexpocentre, Tashkent',  attendees: 2000 },
+    { id: 1, type: 'doc',  title: 'Program Rundown (DRAFT)',       description: 'Minute-by-minute show flow — VIP arrival through close',              updated: '2026-04-18', category: 'Program'     },
+    { id: 2, type: 'doc',  title: 'Venue Layout — Uzexpocentre',   description: 'Floor plan: stage, food court, VIP zones, Grand Entrance',            updated: '2026-04-10', category: 'Logistics'   },
+    { id: 3, type: 'doc',  title: 'AV & Stage Technical Specs',    description: 'Stage dimensions, PA, LED specs, lighting plot, DJ rider',            updated: '2026-04-10', category: 'AV / Tech'   },
+    { id: 4, type: 'doc',  title: 'VIP / VVIP Protocol Guide',     description: 'Red carpet, seating, catering menu, VVIP escort plan',               updated: '2026-04-05', category: 'Protocol'    },
+    { id: 5, type: 'doc',  title: 'Vendor Contracts',              description: 'Signed agreements — AV, venue, KFC, Coca-Cola',                       updated: '2026-04-18', category: 'Procurement' },
+    { id: 6, type: 'doc',  title: '8-Week Master Plan',            description: 'Week-by-week milestones, critical path, responsibilities',             updated: '2026-04-18', category: 'Planning'    },
+    { id: 7, type: 'doc',  title: 'Security & Emergency Plan',     description: 'Perimeter, crowd management, medical, weather contingency',           updated: '2026-04-01', category: 'Security'    },
+    { id: 8, type: 'link', title: 'America 250 Brand Guidelines',  description: 'Official brand colors, flag specs, logo usage',                       updated: '2026-03-15', category: 'Design'      },
   ]
 }
