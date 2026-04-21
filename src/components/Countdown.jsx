@@ -5,13 +5,11 @@ function TimeBox({ value, label }) {
   const display = String(value).padStart(2, '0')
   return (
     <div className="flex flex-col items-center">
-      <div className="relative bg-slate-900 border border-yellow-700/30 rounded-xl px-6 py-5 min-w-[88px] text-center shadow-[0_0_25px_rgba(161,110,3,0.2)] overflow-hidden">
-        {/* subtle shimmer line */}
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-600/40 to-transparent" />
-        <span className="digit font-display text-5xl font-black text-yellow-400 leading-none tracking-tight">
+      <div className="bg-navy-950 border border-[#1c3a5e] border-t-2 border-t-brand-gold px-5 py-4 min-w-[80px] text-center">
+        <span className="digit font-bebas text-5xl text-cream leading-none tracking-wide">
           {display}
         </span>
-        <div className="text-[9px] text-slate-500 mt-2 tracking-[0.25em] uppercase">{label}</div>
+        <div className="text-[8px] text-steel mt-1.5 tracking-[0.3em] uppercase">{label}</div>
       </div>
     </div>
   )
@@ -19,7 +17,7 @@ function TimeBox({ value, label }) {
 
 function Sep() {
   return (
-    <span className="text-yellow-600/50 text-3xl font-bold pb-5 select-none leading-none">:</span>
+    <span className="font-bebas text-3xl text-[#2a5a8e] pb-5 select-none leading-none">:</span>
   )
 }
 

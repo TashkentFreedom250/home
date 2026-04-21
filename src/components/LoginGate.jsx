@@ -28,47 +28,59 @@ export default function LoginGate({ children }) {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-slate-950 px-4">
+    <div className="relative min-h-screen bg-navy-950 flex flex-col">
       <Stars />
 
-      <div className="relative z-10 flex flex-col items-center w-full max-w-2xl text-center gap-10">
+      {/* Top bar */}
+      <div className="relative z-10 bg-brand-red flex items-center justify-between px-8 py-2.5">
+        <div className="text-[9px] tracking-[0.45em] text-white/70 uppercase font-medium">
+          U.S. Embassy · Tashkent · Uzbekistan
+        </div>
+        <div className="text-[9px] tracking-[0.45em] text-white/70 uppercase font-medium">
+          Authorized Access Only
+        </div>
+      </div>
 
-        {/* Branding */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-center gap-3 mb-3">
-            <div className="h-px w-12 bg-gradient-to-r from-transparent to-yellow-700/60" />
-            <span className="text-[11px] tracking-[0.35em] text-yellow-600 uppercase font-semibold">
-              U.S. Embassy Tashkent
-            </span>
-            <div className="h-px w-12 bg-gradient-to-l from-transparent to-yellow-700/60" />
+      {/* Center content */}
+      <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 py-12">
+
+        {/* Hero title */}
+        <div className="text-center mb-10">
+          <div className="font-display text-[80px] sm:text-[110px] leading-none font-bold text-cream tracking-[0.08em]">
+            FREEDOM
           </div>
-          <h1 className="text-5xl sm:text-6xl font-black tracking-tight text-white leading-none">
-            FREEDOM <span className="text-yellow-400">250</span>
-          </h1>
-          <p className="text-slate-400 text-sm tracking-[0.2em] uppercase mt-2">
-            June 10, 2026 · Tashkent, Uzbekistan
-          </p>
+          <div className="font-display text-[80px] sm:text-[110px] leading-none font-bold text-brand-gold tracking-[0.08em] -mt-3">
+            250
+          </div>
+          <div className="mt-5 flex items-center justify-center gap-4">
+            <div className="h-px w-16 bg-[#1c3a5e]" />
+            <div className="text-[10px] tracking-[0.5em] text-steel uppercase">
+              America's 250th Anniversary · June 10, 2026
+            </div>
+            <div className="h-px w-16 bg-[#1c3a5e]" />
+          </div>
         </div>
 
         {/* Countdown */}
-        <div className="w-full">
-          <div className="text-[10px] tracking-[0.3em] text-slate-500 uppercase mb-4">
-            Counting down to showtime
+        <div className="mb-10 w-full max-w-lg">
+          <div className="text-[9px] tracking-[0.4em] text-steel uppercase text-center mb-4">
+            Time Remaining
           </div>
           <Countdown />
         </div>
 
         {/* Divider */}
-        <div className="flex items-center gap-4 w-full max-w-sm">
-          <div className="flex-1 h-px bg-slate-800" />
-          <span className="text-[11px] tracking-[0.2em] text-slate-600 uppercase">Enter password to access</span>
-          <div className="flex-1 h-px bg-slate-800" />
+        <div className="w-full max-w-xs mb-8">
+          <div className="h-px bg-[#1c3a5e]" />
+          <div className="mt-3 text-center text-[10px] tracking-[0.35em] text-[#4a6a88] uppercase">
+            Mission Control · Enter Password
+          </div>
         </div>
 
-        {/* Password form */}
+        {/* Form */}
         <form
           onSubmit={handleSubmit}
-          className={`w-full max-w-sm space-y-3 ${shake ? 'animate-shake' : ''}`}
+          className="w-full max-w-xs space-y-3"
           style={{ animation: shake ? 'shake 0.4s ease' : undefined }}
         >
           <input
@@ -77,18 +89,27 @@ export default function LoginGate({ children }) {
             autoFocus
             placeholder="Password"
             onChange={e => { setInput(e.target.value); setError(false) }}
-            className={`w-full rounded-lg border px-4 py-3 bg-slate-900 text-white placeholder-slate-600 text-sm outline-none transition-all duration-150 focus:border-yellow-600/60 focus:ring-1 focus:ring-yellow-600/30 text-center tracking-widest ${
-              error ? 'border-red-700/60' : 'border-slate-800'
-            }`}
+            className={`w-full bg-navy-800 border px-4 py-3 text-cream placeholder-[#3a5a7a] text-sm
+              outline-none transition-colors duration-150 text-center tracking-widest
+              focus:border-brand-gold ${error ? 'border-brand-red' : 'border-[#1c3a5e]'}`}
           />
           {error && (
-            <p className="text-xs text-red-400">Incorrect password. Try again.</p>
+            <p className="text-[11px] text-[#e87070] text-center tracking-wider">
+              Incorrect password. Try again.
+            </p>
           )}
-          <button type="submit" className="btn-primary w-full">
+          <button type="submit" className="btn-primary w-full text-center">
             Enter Mission Control
           </button>
         </form>
 
+      </div>
+
+      {/* Bottom stamp */}
+      <div className="relative z-10 border-t border-[#1c3a5e] px-8 py-3 flex items-center justify-center">
+        <span className="text-[9px] tracking-[0.3em] text-[#3a5a7a] uppercase">
+          Uzexpocentre · Tashkent, Uzbekistan
+        </span>
       </div>
 
       <style>{`

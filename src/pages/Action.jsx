@@ -6,17 +6,32 @@ const priorityCfg = {
   medium: { badge: 'badge-gold', label: 'This Week'  },
   low:    { badge: 'badge-blue', label: 'Soon'       },
 }
+const priorityAccent = {
+  high:   'border-t-brand-red',
+  medium: 'border-t-brand-gold',
+  low:    'border-t-brand-blue',
+}
 const typeBadge = {
   'Virtual':   'badge-blue',
   'In-Person': 'badge-red',
   'Internal':  'badge-purple',
 }
 const categoryCls = {
-  ceremony:      'text-yellow-400 bg-yellow-950/40 border-yellow-800/30',
-  entertainment: 'text-blue-400   bg-blue-950/40   border-blue-800/30',
-  logistics:     'text-slate-400  bg-slate-800/40  border-slate-700/30',
+  ceremony:      'text-brand-gold  bg-[#d4a830]/10 border-[#d4a830]/30',
+  entertainment: 'text-brand-blue  bg-[#2563a8]/10 border-[#2563a8]/30',
+  logistics:     'text-steel       bg-navy-950/60  border-[#1c3a5e]',
 }
 const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+
+function SectionLabel({ children, badge }) {
+  return (
+    <div className="mb-4 flex items-center gap-3">
+      <div className="h-px w-4 bg-brand-gold" />
+      <h2 className="text-[10px] font-semibold tracking-[0.3em] text-cream uppercase">{children}</h2>
+      {badge && <span className="badge-gold">{badge}</span>}
+    </div>
+  )
+}
 
 export default function Action() {
   const actions = getActions()
@@ -27,33 +42,35 @@ export default function Action() {
     <div className="min-h-full p-8">
 
       {/* Header */}
-      <div className="card card-glow-red relative mb-6 overflow-hidden">
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-red-900/20 via-transparent to-transparent" />
-        <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-red-700 via-red-600 to-transparent" />
-        <div className="relative">
-          <p className="mb-2 text-xs font-medium uppercase tracking-[0.3em] text-red-400">Chair's Command Center</p>
-          <h1 className="mb-2 font-display text-3xl font-black text-white">Action Required</h1>
-          <p className="text-sm text-slate-400">Tasks that need your attention this week. Contracts, CRM, and procurement must close out.</p>
+      <div className="card card-glow-red mb-6">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="text-[9px] tracking-[0.45em] text-brand-red uppercase mb-2">Chair's Command Center</div>
+            <h1 className="font-display text-4xl font-bold text-cream tracking-widest leading-none">ACTION REQUIRED</h1>
+            <p className="mt-2 text-sm text-steel max-w-xl">
+              Tasks that need your attention this week. Contracts, CRM, and procurement must close out.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* This week's actions */}
       <section className="mb-8">
-        <h2 className="mb-4 text-base font-semibold text-white">This Week's Actions</h2>
+        <SectionLabel>This Week's Actions</SectionLabel>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {actions.map(action => {
-            const cfg = priorityCfg[action.priority]
+            const cfg    = priorityCfg[action.priority]
+            const accent = priorityAccent[action.priority]
             return (
-              <div key={action.id} className="card flex flex-col hover:border-slate-600 hover:-translate-y-0.5 transition-all duration-200">
+              <div key={action.id} className={`card border-t-2 ${accent} flex flex-col hover:border-[#2a5a8e] transition-all duration-200`}>
                 <div className="mb-2 flex items-start justify-between">
-                  <span className="text-2xl leading-none">{action.icon}</span>
-                  <span className={cfg.badge}>{cfg.label}</span>
+                  <h3 className="text-sm font-semibold text-cream flex-1 mr-2">{action.title}</h3>
+                  <span className={`flex-shrink-0 ${cfg.badge}`}>{cfg.label}</span>
                 </div>
-                <h3 className="mb-1 text-sm font-semibold text-white">{action.title}</h3>
-                <p className="mb-3 flex-1 text-xs leading-relaxed text-slate-500">{action.description}</p>
+                <p className="mb-3 flex-1 text-[11px] leading-relaxed text-steel">{action.description}</p>
                 <div className="flex items-center justify-between">
-                  <button className="btn-primary text-xs py-2 px-3">{action.cta}</button>
-                  <span className="text-xs text-slate-600">Due {action.deadline}</span>
+                  <button className="btn-primary text-xs py-1.5 px-3">{action.cta}</button>
+                  <span className="text-[11px] text-[#3a5a7a]">Due {action.deadline}</span>
                 </div>
               </div>
             )
@@ -61,42 +78,41 @@ export default function Action() {
         </div>
       </section>
 
-      {/* Draggable event timeline */}
+      {/* Event timeline */}
       <section className="mb-8">
-        <h2 className="mb-4 text-base font-semibold text-white">
-          Event Day Timeline
-          <span className="ml-2 badge-gold">DRAFT</span>
-        </h2>
+        <SectionLabel badge="DRAFT">Event Day Timeline</SectionLabel>
         <EventTimeline />
       </section>
 
-      {/* Program rundown table */}
+      {/* Program rundown */}
       <section className="mb-8">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-white">Program Rundown</h2>
-          <span className="text-xs text-slate-600">Updated {fmtDate(program.lastUpdated)}</span>
+          <div className="flex items-center gap-3">
+            <div className="h-px w-4 bg-brand-gold" />
+            <h2 className="text-[10px] font-semibold tracking-[0.3em] text-cream uppercase">Program Rundown</h2>
+          </div>
+          <span className="text-[11px] text-steel">Updated {fmtDate(program.lastUpdated)}</span>
         </div>
         <div className="card p-0 overflow-hidden">
-          <div className="border-b border-slate-800 bg-slate-800/30 px-6 py-3">
-            <p className="text-xs text-slate-400 italic">{program.note}</p>
+          <div className="border-b border-[#1c3a5e] bg-navy-950/60 px-6 py-3">
+            <p className="text-[11px] text-steel italic">{program.note}</p>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-800">
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 w-20">Time</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 w-20">Dur.</th>
-                <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Item</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500 w-28">Category</th>
+              <tr className="border-b border-[#1c3a5e]">
+                {['Time', 'Dur.', 'Item', 'Category'].map(h => (
+                  <th key={h} className="px-5 py-3 text-left text-[9px] font-medium tracking-[0.3em] uppercase text-steel">{h}</th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-[#1c3a5e]/60">
               {program.blocks.map((block, i) => (
-                <tr key={i} className="hover:bg-slate-800/30 transition-colors group">
-                  <td className="px-6 py-3 font-mono text-xs font-semibold text-yellow-400">{block.time}</td>
-                  <td className="px-4 py-3 text-xs text-slate-500">{block.duration}</td>
-                  <td className="px-4 py-3 text-sm text-white">{block.item}</td>
-                  <td className="px-6 py-3">
-                    <span className={`inline-block rounded-md border px-2 py-0.5 text-xs font-medium capitalize ${categoryCls[block.category]}`}>
+                <tr key={i} className="hover:bg-navy-950/50 transition-colors">
+                  <td className="px-5 py-3 font-mono text-xs font-semibold text-brand-gold">{block.time}</td>
+                  <td className="px-4 py-3 text-xs text-steel">{block.duration}</td>
+                  <td className="px-4 py-3 text-sm text-cream">{block.item}</td>
+                  <td className="px-5 py-3">
+                    <span className={`inline-block border px-2 py-0.5 text-[10px] font-medium capitalize ${categoryCls[block.category]}`}>
                       {block.category}
                     </span>
                   </td>
@@ -109,26 +125,24 @@ export default function Action() {
 
       {/* Key dates */}
       <section>
-        <h2 className="mb-4 text-base font-semibold text-white">Key Dates</h2>
+        <SectionLabel>Key Dates</SectionLabel>
         <div className="card p-0 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-slate-800">
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Event</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Date</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Location</th>
-                <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-500">Type</th>
-                <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-500">People</th>
+              <tr className="border-b border-[#1c3a5e]">
+                {['Event', 'Date', 'Location', 'Type', 'People'].map((h, i) => (
+                  <th key={h} className={`px-5 py-3 text-[9px] font-medium tracking-[0.3em] uppercase text-steel ${i === 4 ? 'text-right' : 'text-left'}`}>{h}</th>
+                ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-[#1c3a5e]/60">
               {events.map(ev => (
-                <tr key={ev.id} className="hover:bg-slate-800/30 transition-colors group">
-                  <td className="px-6 py-3 font-medium text-white group-hover:text-yellow-300 transition-colors">{ev.name}</td>
-                  <td className="px-6 py-3 text-slate-400">{fmtDate(ev.date)}</td>
-                  <td className="px-6 py-3 text-slate-400">{ev.location}</td>
-                  <td className="px-6 py-3"><span className={typeBadge[ev.type] || 'badge-gold'}>{ev.type}</span></td>
-                  <td className="px-6 py-3 text-right tabular-nums text-slate-300">{ev.attendees.toLocaleString()}</td>
+                <tr key={ev.id} className="hover:bg-navy-950/50 transition-colors group">
+                  <td className="px-5 py-3 font-medium text-cream group-hover:text-brand-gold transition-colors">{ev.name}</td>
+                  <td className="px-5 py-3 text-steel">{fmtDate(ev.date)}</td>
+                  <td className="px-5 py-3 text-steel">{ev.location}</td>
+                  <td className="px-5 py-3"><span className={typeBadge[ev.type] || 'badge-gold'}>{ev.type}</span></td>
+                  <td className="px-5 py-3 text-right tabular-nums text-cream/80">{ev.attendees.toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>
