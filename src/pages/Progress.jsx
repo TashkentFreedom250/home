@@ -12,18 +12,17 @@ const contractBadge = {
   'not-started': { cls: 'badge-red',   label: 'Not Started' },
 }
 const contractAccent = {
-  'awarded':     'border-t-green-600',
-  'in-progress': 'border-t-brand-gold',
-  'not-started': 'border-t-brand-red',
+  'awarded':     'border-t-green-700',
+  'in-progress': 'border-t-gold',
+  'not-started': 'border-t-crimson',
 }
 const taskIcon = { completed: '✓', 'in-progress': '●', 'not-started': '○' }
 const fmtDate  = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
 function SectionLabel({ children }) {
   return (
-    <div className="mb-4 flex items-center gap-3">
-      <div className="h-px w-4 bg-brand-gold" />
-      <h2 className="text-[10px] font-semibold tracking-[0.3em] text-cream uppercase">{children}</h2>
+    <div className="section-label mb-4">
+      <span className="section-label-text">{children}</span>
     </div>
   )
 }
@@ -34,49 +33,51 @@ export default function Progress() {
   const timeline  = getTimeline()
 
   return (
-    <div className="min-h-full p-8">
+    <div className="min-h-full p-8 max-w-6xl mx-auto">
 
       {/* Header */}
-      <div className="mb-8 pb-6 border-b border-[#1c3a5e]">
-        <h1 className="font-display text-4xl font-bold text-cream tracking-widest leading-none">PROGRESS</h1>
-        <p className="mt-2 text-[11px] tracking-[0.25em] text-steel uppercase">Mission readiness across all workstreams</p>
+      <div className="anim anim-1 mb-8 border-b-4 border-ink pb-5">
+        <div className="font-mono text-[9px] tracking-[0.5em] text-ink-muted uppercase mb-1">Tracker</div>
+        <h1 className="font-display text-[56px] leading-none text-ink tracking-tight">PROGRESS</h1>
+        <p className="mt-1 font-mono text-[11px] text-ink-muted tracking-wider">Mission readiness across all workstreams</p>
+        <div className="mt-3 h-[2px] bg-crimson" />
       </div>
 
       {/* Overall readiness */}
-      <div className="card card-glow-gold mb-6">
+      <div className="anim anim-2 card card-glow-gold mb-6">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="text-[9px] tracking-[0.35em] text-steel uppercase mb-1">Overall Readiness</div>
-            <div className="text-sm font-medium text-cream">Across {initiatives.length} workstreams</div>
+            <div className="font-mono text-[9px] tracking-[0.35em] text-ink-muted uppercase mb-1">Overall Readiness</div>
+            <div className="font-serif text-base font-semibold text-ink">Across {initiatives.length} workstreams</div>
           </div>
-          <span className="font-bebas text-6xl text-brand-gold leading-none">{overall}%</span>
+          <span className="font-display text-6xl text-gold leading-none tracking-tight">{overall}%</span>
         </div>
         <ProgressBar value={overall} color="gold" height="lg" />
       </div>
 
       {/* Contracts */}
-      <section className="mb-8">
+      <section className="anim anim-3 mb-8">
         <SectionLabel>Contracts</SectionLabel>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {contracts.map(c => {
-            const badge = contractBadge[c.status]
+            const badge  = contractBadge[c.status]
             const accent = contractAccent[c.status]
             return (
-              <div key={c.id} className={`card border-t-2 ${accent}`}>
+              <div key={c.id} className={`card border-t-[3px] ${accent}`}>
                 <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className="text-sm font-semibold text-cream">{c.name}</span>
+                  <span className="font-serif text-sm font-semibold text-ink">{c.name}</span>
                   <span className={badge.cls}>{badge.label}</span>
                 </div>
-                <p className="mb-2 text-[11px] text-steel">{c.description}</p>
+                <p className="mb-2 font-mono text-[10px] text-ink-muted leading-relaxed">{c.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-brand-gold">{c.cost}</span>
+                  <span className="font-mono text-xs font-medium text-gold">{c.cost}</span>
                   {c.awardDate && (
-                    <span className="text-[11px] text-green-400">
+                    <span className="font-mono text-[10px] text-green-700">
                       Settled {new Date(c.awardDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </span>
                   )}
                 </div>
-                <div className="mt-2 border border-[#1c3a5e] bg-navy-950/60 px-3 py-2 text-[11px] text-brand-gold">
+                <div className="mt-2 border border-paper-mid bg-paper-dark px-3 py-2 font-mono text-[10px] text-gold">
                   {c.nextStep}
                 </div>
               </div>
@@ -86,22 +87,22 @@ export default function Progress() {
       </section>
 
       {/* Workstreams */}
-      <section className="mb-8">
+      <section className="anim anim-4 mb-8">
         <SectionLabel>Workstreams</SectionLabel>
         <div className="grid gap-3 sm:grid-cols-2">
           {initiatives.map(init => {
             const cfg = statusCfg[init.status]
             return (
-              <div key={init.id} className="card hover:border-[#2a5a8e] transition-colors">
+              <div key={init.id} className="card hover:border-paper-mid transition-colors">
                 <div className="mb-2 flex items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-medium text-cream">{init.name}</div>
-                    <div className="mt-0.5 text-[11px] text-steel">{init.owner} · {init.deadline}</div>
+                    <div className="truncate font-serif text-sm font-medium text-ink">{init.name}</div>
+                    <div className="mt-0.5 font-mono text-[10px] text-ink-muted">{init.owner} · {init.deadline}</div>
                   </div>
                   <span className={`flex-shrink-0 ${cfg.badge}`}>{cfg.label}</span>
                 </div>
                 <ProgressBar value={init.progress} color={cfg.bar} />
-                <p className="mt-1.5 text-[11px] text-steel">{init.note}</p>
+                <p className="mt-1.5 font-mono text-[10px] text-ink-muted">{init.note}</p>
               </div>
             )
           })}
@@ -109,26 +110,28 @@ export default function Progress() {
       </section>
 
       {/* 8-Week Timeline */}
-      <section className="mb-8">
+      <section className="anim anim-5 mb-8">
         <SectionLabel>8-Week Countdown</SectionLabel>
         <div className="space-y-2">
           {timeline.map(week => (
-            <div key={week.week} className={`card ${week.phase === 'current' ? 'card-glow-gold ring-1 ring-brand-gold/20' : ''}`}>
+            <div key={week.week} className={`card ${week.phase === 'current' ? 'card-glow-red ring-1 ring-crimson/20' : 'card-glow-blue'}`}>
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  {week.phase === 'current' && <span className="badge-gold">THIS WEEK</span>}
-                  <h3 className="text-sm font-semibold text-cream">Week {week.week} — {week.label}</h3>
+                  {week.phase === 'current' && <span className="badge-red">This Week</span>}
+                  <h3 className="font-serif text-sm font-semibold text-ink">Week {week.week} — {week.label}</h3>
                 </div>
-                <span className="text-[11px] text-steel">{week.dates}</span>
+                <span className="font-mono text-[10px] text-ink-muted">{week.dates}</span>
               </div>
               <div className="space-y-1.5">
                 {week.tasks.map((t, i) => (
-                  <div key={i} className={`flex items-start gap-2 text-xs ${t.status === 'completed' ? 'text-[#3a5a7a] line-through' : t.critical ? 'text-cream' : 'text-steel'}`}>
-                    <span className="mt-px flex-shrink-0 font-mono text-[10px]">{taskIcon[t.status]}</span>
+                  <div key={i} className={`flex items-start gap-2 font-mono text-[11px] ${
+                    t.status === 'completed' ? 'text-ink-muted/50 line-through' : t.critical ? 'text-ink' : 'text-ink-muted'
+                  }`}>
+                    <span className="mt-px flex-shrink-0">{taskIcon[t.status]}</span>
                     <span className={t.critical && t.status !== 'completed' ? 'font-medium' : ''}>
                       {t.task}
                       {t.critical && t.status !== 'completed' && (
-                        <span className="ml-2 text-[10px] tracking-wider text-brand-red no-underline">CRITICAL</span>
+                        <span className="ml-2 text-crimson tracking-wider">CRITICAL</span>
                       )}
                     </span>
                   </div>
@@ -140,22 +143,22 @@ export default function Progress() {
       </section>
 
       {/* Milestones */}
-      <section>
+      <section className="anim anim-6">
         <SectionLabel>Key Milestones</SectionLabel>
         <div className="card">
           <div className="relative">
-            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-[#1c3a5e]" />
+            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-paper-mid" />
             <div className="space-y-4">
               {milestones.map(m => (
                 <div key={m.id} className="relative flex items-start gap-5 pl-7">
                   <div className={`absolute left-0 top-1.5 h-3 w-3 border-2 ${
-                    m.status === 'completed' ? 'border-green-500 bg-green-500' : 'border-brand-gold bg-navy-950'
+                    m.status === 'completed' ? 'border-green-700 bg-green-700' : 'border-crimson bg-paper'
                   }`} />
                   <div className="min-w-0 flex-1">
-                    <div className={`text-sm font-medium ${m.status === 'completed' ? 'text-steel line-through' : 'text-cream'}`}>
+                    <div className={`font-serif text-sm font-medium ${m.status === 'completed' ? 'text-ink-muted line-through' : 'text-ink'}`}>
                       {m.name}
                     </div>
-                    <div className="mt-0.5 text-[11px] text-[#3a5a7a]">{fmtDate(m.date)}</div>
+                    <div className="mt-0.5 font-mono text-[10px] text-ink-muted/70">{fmtDate(m.date)}</div>
                   </div>
                   <span className={`flex-shrink-0 ${m.status === 'completed' ? 'badge-green' : 'badge-gold'}`}>
                     {m.status === 'completed' ? 'Done' : 'Upcoming'}

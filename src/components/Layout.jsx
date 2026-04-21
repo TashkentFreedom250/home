@@ -1,90 +1,59 @@
 import { Outlet, NavLink } from 'react-router-dom'
-import Stars from './Stars'
-
-function IconDashboard() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-      <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
-    </svg>
-  )
-}
-function IconProgress() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
-      <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
-    </svg>
-  )
-}
-function IconResources() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-    </svg>
-  )
-}
-function IconAction() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-    </svg>
-  )
-}
 
 const NAV = [
-  { path: '/',          label: 'Dashboard', Icon: IconDashboard, end: true  },
-  { path: '/progress',  label: 'Progress',  Icon: IconProgress,  end: false },
-  { path: '/resources', label: 'Resources', Icon: IconResources, end: false },
-  { path: '/action',    label: 'Action',    Icon: IconAction,    end: false },
+  { path: '/',          label: 'Dashboard', end: true  },
+  { path: '/progress',  label: 'Progress',  end: false },
+  { path: '/resources', label: 'Resources', end: false },
+  { path: '/action',    label: 'Action',    end: false },
 ]
 
 export default function Layout() {
   return (
-    <div className="relative flex h-screen overflow-hidden bg-navy-900">
-      <Stars />
+    <div className="flex h-screen overflow-hidden bg-paper">
 
-      {/* ── Sidebar ─────────────────────────────────────────────── */}
-      <aside className="relative z-10 flex w-52 flex-shrink-0 flex-col bg-navy-950 border-r border-[#1c3a5e]">
+      {/* ── Sidebar / Masthead ──────────────────────────────── */}
+      <aside className="flex w-48 flex-shrink-0 flex-col bg-paper-dark border-r-2 border-ink">
 
-        {/* Logo */}
-        <div className="px-6 py-6 border-b border-[#1c3a5e]">
-          <div className="font-display text-2xl font-bold tracking-[0.12em] text-cream leading-none">FREEDOM</div>
-          <div className="font-display text-2xl font-bold tracking-[0.12em] text-brand-gold leading-none">250</div>
-          <div className="mt-2.5 h-px bg-[#1c3a5e]" />
-          <div className="mt-2 text-[9px] tracking-[0.35em] text-steel uppercase">U.S. Embassy · Tashkent</div>
+        {/* Masthead */}
+        <div className="px-5 pt-6 pb-5 border-b-2 border-ink">
+          <div className="font-mono text-[9px] tracking-[0.5em] text-ink-muted uppercase mb-3">
+            U.S. Embassy
+          </div>
+          <div className="font-display text-[42px] leading-none text-ink tracking-tight">FREEDOM</div>
+          <div className="font-display text-[42px] leading-none text-crimson tracking-tight">250</div>
+          <div className="mt-3 text-crimson text-[11px] tracking-[0.4em]">★ ★ ★ ★ ★</div>
         </div>
 
         {/* Nav */}
-        <nav className="flex-1 py-3">
-          {NAV.map(({ path, label, Icon, end }) => (
+        <nav className="flex-1 py-2">
+          {NAV.map(({ path, label, end }) => (
             <NavLink
               key={path}
               to={path}
               end={end}
               className={({ isActive }) =>
-                `relative flex items-center gap-3 px-6 py-3 text-[10px] font-semibold tracking-[0.22em] uppercase transition-all duration-150 border-l-2 ${
+                `block px-5 py-3 font-mono text-[10px] tracking-[0.25em] uppercase border-l-[3px] transition-all duration-150 ${
                   isActive
-                    ? 'border-brand-gold text-cream bg-navy-800'
-                    : 'border-transparent text-steel hover:text-cream hover:bg-navy-800/50'
+                    ? 'border-crimson text-crimson bg-crimson/8'
+                    : 'border-transparent text-ink-muted hover:text-ink hover:bg-ink/5'
                 }`
               }
             >
-              <Icon />
               {label}
             </NavLink>
           ))}
         </nav>
 
         {/* Footer */}
-        <div className="border-t border-[#1c3a5e] px-6 py-4">
-          <div className="text-[9px] tracking-[0.3em] text-steel uppercase">June 10, 2026</div>
-          <div className="mt-0.5 text-[9px] text-[#3a5a7a]">41.3°N 69.3°E · Tashkent</div>
+        <div className="border-t border-paper-mid px-5 py-4">
+          <div className="font-mono text-[9px] tracking-[0.3em] text-ink-muted uppercase">June 10, 2026</div>
+          <div className="font-mono text-[9px] text-ink-muted/60 mt-0.5">Tashkent, Uzbekistan</div>
+          <div className="mt-2 font-mono text-[8px] text-ink-muted/40 tracking-wider">41.3°N 69.3°E</div>
         </div>
       </aside>
 
-      {/* ── Main ────────────────────────────────────────────────── */}
-      <main className="relative z-10 flex-1 overflow-y-auto">
+      {/* ── Main ────────────────────────────────────────────── */}
+      <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>
     </div>

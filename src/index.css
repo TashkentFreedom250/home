@@ -3,90 +3,121 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --paper:       #F2EDE1;
+    --paper-card:  #FDFAF5;
+    --paper-dark:  #E8E2D2;
+    --ink:         #1A1510;
+    --ink-light:   #4A3F33;
+    --ink-muted:   #7A6B5A;
+    --crimson:     #C8293C;
+    --navy:        #1B3A6B;
+    --gold:        #C8891A;
+    --rule:        #C8BFAE;
+  }
+
   body {
-    background-color: #020c1b;
-    color: #e8e3d5;
-    font-family: 'Inter', sans-serif;
-    background-image:
-      linear-gradient(rgba(28, 58, 94, 0.12) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(28, 58, 94, 0.12) 1px, transparent 1px);
-    background-size: 60px 60px;
-    background-attachment: fixed;
+    background-color: var(--paper);
+    color: var(--ink);
+    font-family: 'Libre Baskerville', serif;
+  }
+
+  /* Paper grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.038;
+    pointer-events: none;
+    z-index: 9998;
+    mix-blend-mode: multiply;
   }
 }
 
 @layer components {
-  /* ── Cards ───────────────────────────────────────────────────── */
+  /* ── Cards ───────────────────────────────────────────────── */
   .card {
-    background: #071428;
-    border: 1px solid #1c3a5e;
+    background: var(--paper-card);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--crimson);
     border-radius: 0;
     padding: 1.25rem 1.5rem;
     position: relative;
-    overflow: hidden;
+    box-shadow: 2px 3px 0 rgba(26,21,16,0.05);
   }
-  .card-accent-gold { border-top: 2px solid #d4a830; }
-  .card-accent-red  { border-top: 2px solid #c0392b; }
-  .card-accent-blue { border-top: 2px solid #2563a8; }
+  .card-glow-gold { border-top-color: var(--gold); }
+  .card-glow-red  { border-top-color: var(--crimson); }
+  .card-glow-blue { border-top-color: var(--navy); }
 
-  /* map old glow names → new accent names */
-  .card-glow-gold { border-top: 2px solid #d4a830; }
-  .card-glow-red  { border-top: 2px solid #c0392b; }
-  .card-glow-blue { border-top: 2px solid #2563a8; }
+  /* ── Badges ──────────────────────────────────────────────── */
+  .badge-red, .badge-gold, .badge-blue, .badge-green, .badge-purple {
+    @apply text-[10px] font-medium px-2 py-0.5 tracking-widest uppercase border;
+    font-family: 'DM Mono', monospace;
+  }
+  .badge-red    { @apply bg-crimson/10   text-crimson     border-crimson/35;   }
+  .badge-gold   { @apply bg-gold/10      text-gold        border-gold/35;      }
+  .badge-blue   { @apply bg-navy/10      text-navy        border-navy/35;      }
+  .badge-green  { @apply bg-green-800/10 text-green-800   border-green-700/30; }
+  .badge-purple { @apply bg-purple-900/10 text-purple-900 border-purple-700/30; }
 
-  /* ── Badges ──────────────────────────────────────────────────── */
-  .badge-red {
-    @apply bg-[#c0392b]/15 text-[#e87070] border border-[#c0392b]/40
-           text-[10px] font-medium px-2 py-0.5 tracking-wide;
-  }
-  .badge-gold {
-    @apply bg-[#d4a830]/15 text-[#d4a830] border border-[#d4a830]/40
-           text-[10px] font-medium px-2 py-0.5 tracking-wide;
-  }
-  .badge-blue {
-    @apply bg-[#2563a8]/15 text-[#6ba0e0] border border-[#2563a8]/40
-           text-[10px] font-medium px-2 py-0.5 tracking-wide;
-  }
-  .badge-green {
-    @apply bg-green-900/30 text-green-400 border border-green-700/40
-           text-[10px] font-medium px-2 py-0.5 tracking-wide;
-  }
-  .badge-purple {
-    @apply bg-purple-900/30 text-purple-400 border border-purple-700/40
-           text-[10px] font-medium px-2 py-0.5 tracking-wide;
-  }
-
-  /* ── Buttons ─────────────────────────────────────────────────── */
+  /* ── Buttons ─────────────────────────────────────────────── */
   .btn-primary {
-    @apply bg-[#d4a830] text-[#010810] font-semibold px-5 py-2.5 text-sm
-           hover:bg-[#b8901a] transition-colors duration-150;
+    @apply bg-crimson text-white font-bold px-5 py-2.5 text-xs tracking-[0.2em] uppercase
+           hover:bg-[#a81e2e] transition-colors duration-150;
+    font-family: 'DM Mono', monospace;
   }
   .btn-ghost {
-    @apply border border-[#1c3a5e] text-steel font-medium px-5 py-2.5 text-sm
-           hover:border-[#2a5a8e] hover:text-cream transition-colors duration-150;
+    @apply border border-ink text-ink font-medium px-5 py-2.5 text-xs uppercase tracking-[0.2em]
+           hover:bg-ink hover:text-paper transition-colors duration-150;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── Section label ───────────────────────────────────────── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .section-label::before {
+    content: '';
+    display: block;
+    height: 2px;
+    width: 14px;
+    background: var(--crimson);
+    flex-shrink: 0;
+  }
+  .section-label-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink);
   }
 }
 
-/* ── Star field ──────────────────────────────────────────────────── */
-.star {
-  position: absolute;
-  background: white;
-  border-radius: 50%;
-  animation: twinkle var(--duration, 3s) ease-in-out infinite;
-  animation-delay: var(--delay, 0s);
-}
-@keyframes twinkle {
-  0%, 100% { opacity: var(--min-o, 0.03); }
-  50%       { opacity: var(--max-o, 0.25); }
-}
+/* ── Scrollbar ───────────────────────────────────────────────── */
+::-webkit-scrollbar        { width: 4px; }
+::-webkit-scrollbar-track  { background: var(--paper-dark); }
+::-webkit-scrollbar-thumb  { background: var(--rule); }
+::-webkit-scrollbar-thumb:hover { background: var(--crimson); }
 
-/* ── Scrollbar ───────────────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 3px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: #1c3a5e; }
-::-webkit-scrollbar-thumb:hover { background: #d4a830; }
+/* ── Page load animations ────────────────────────────────────── */
+@keyframes reveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim { animation: reveal 0.55s ease-out forwards; opacity: 0; }
+.anim-1 { animation-delay: 0.05s; }
+.anim-2 { animation-delay: 0.15s; }
+.anim-3 { animation-delay: 0.25s; }
+.anim-4 { animation-delay: 0.35s; }
+.anim-5 { animation-delay: 0.45s; }
+.anim-6 { animation-delay: 0.55s; }
 
-/* ── Tabular numerals ────────────────────────────────────────────── */
+/* ── Tabular numerals ────────────────────────────────────────── */
 .digit {
   font-variant-numeric: tabular-nums;
   font-feature-settings: "tnum";
