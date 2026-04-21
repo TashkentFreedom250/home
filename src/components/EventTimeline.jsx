@@ -1,152 +1,135 @@
-import { useRef, useEffect } from 'react'
 import { getProgramRundown } from '../api'
 
-const START = 15 * 60
-const END   = 20 * 60 + 30
-const PPM   = 5
-
 const CAT = {
-  ceremony:      { bg: 'rgba(200,41,60,0.08)',   border: 'rgba(200,41,60,0.35)',  label: '#C8293C', name: 'Ceremony'      },
-  entertainment: { bg: 'rgba(27,58,107,0.08)',   border: 'rgba(27,58,107,0.35)', label: '#1B3A6B', name: 'Entertainment' },
-  logistics:     { bg: 'rgba(26,21,16,0.04)',    border: 'rgba(26,21,16,0.15)',  label: '#7A6B5A', name: 'Logistics'     },
+  ceremony:      { color: '#C8293C', label: 'Ceremony'      },
+  entertainment: { color: '#1B3A6B', label: 'Entertainment' },
+  logistics:     { color: '#7A6B5A', label: 'Logistics'     },
 }
 
-const HOURS = [
-  { label: '3 PM', min: 15 * 60 },
-  { label: '4 PM', min: 16 * 60 },
-  { label: '5 PM', min: 17 * 60 },
-  { label: '6 PM', min: 18 * 60 },
-  { label: '7 PM', min: 19 * 60 },
-  { label: '8 PM', min: 20 * 60 },
-]
+const MAJOR = ['OPENING ACT', 'HEADLINER', 'TOAST', 'FREEDOM 250', 'SHOWTIME', 'DJ —']
 
-function toMin(t) {
+function fmt12h(t) {
   const [h, m] = t.split(':').map(Number)
-  return h * 60 + m
+  const ampm = h >= 12 ? 'PM' : 'AM'
+  const h12  = h > 12 ? h - 12 : h
+  return `${h12}:${String(m).padStart(2, '0')} ${ampm}`
 }
-function parseDur(d) {
-  if (d === '—') return 25
-  return parseInt(d) || 15
+
+function isMajor(text) {
+  return MAJOR.some(k => text.toUpperCase().includes(k))
+}
+
+// Insert hour-mark separators between blocks
+function buildItems(blocks) {
+  const HOUR_GATES = [
+    { at: '16:00', label: '4 PM' },
+    { at: '17:00', label: '5 PM' },
+    { at: '18:00', label: '6 PM' },
+    { at: '19:00', label: '7 PM' },
+    { at: '20:00', label: '8 PM' },
+  ]
+  const items = []
+  let gi = 0
+  for (const block of blocks) {
+    while (gi < HOUR_GATES.length && HOUR_GATES[gi].at <= block.time) {
+      items.push({ type: 'hour', label: HOUR_GATES[gi].label })
+      gi++
+    }
+    items.push({ type: 'block', ...block })
+  }
+  return items
 }
 
 export default function EventTimeline() {
-  const { blocks } = getProgramRundown()
-  const trackRef   = useRef(null)
-
-  useEffect(() => {
-    const el = trackRef.current
-    if (!el) return
-    let active = false, startX = 0, startSL = 0
-
-    function onMouseDown(e) { active = true; startX = e.clientX; startSL = el.scrollLeft; el.style.cursor = 'grabbing' }
-    function onMouseMove(e) { if (!active) return; e.preventDefault(); el.scrollLeft = startSL - (e.clientX - startX) }
-    function onMouseUp()    { active = false; el.style.cursor = 'grab' }
-
-    let touchStartX = 0, touchStartSL = 0
-    function onTouchStart(e) { touchStartX = e.touches[0].clientX; touchStartSL = el.scrollLeft }
-    function onTouchMove(e)  { e.preventDefault(); el.scrollLeft = touchStartSL - (e.touches[0].clientX - touchStartX) }
-
-    el.addEventListener('mousedown',  onMouseDown)
-    el.addEventListener('touchstart', onTouchStart, { passive: true })
-    el.addEventListener('touchmove',  onTouchMove,  { passive: false })
-    window.addEventListener('mousemove', onMouseMove)
-    window.addEventListener('mouseup',   onMouseUp)
-
-    return () => {
-      el.removeEventListener('mousedown',  onMouseDown)
-      el.removeEventListener('touchstart', onTouchStart)
-      el.removeEventListener('touchmove',  onTouchMove)
-      window.removeEventListener('mousemove', onMouseMove)
-      window.removeEventListener('mouseup',   onMouseUp)
-    }
-  }, [])
-
-  const totalW = (END - START) * PPM + 80
+  const { blocks, note } = getProgramRundown()
+  const items = buildItems(blocks)
 
   return (
-    <div className="card card-glow-blue">
-      {/* Header */}
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h3 className="font-serif text-base font-semibold text-ink italic">Event Day Timeline</h3>
-          <p className="mt-0.5 font-mono text-[10px] text-ink-muted">Drag to explore the full program · June 10, 2026</p>
+    <div className="card card-glow-blue overflow-hidden">
+
+      {/* Programme header */}
+      <div className="text-center mb-5 pb-4 border-b border-paper-mid">
+        <div className="font-mono text-[9px] tracking-[0.5em] text-ink-muted uppercase mb-2">
+          June 10, 2026 · Uzexpocentre, Tashkent
         </div>
-        <div className="flex flex-wrap gap-4">
-          {Object.values(CAT).map(c => (
-            <span key={c.name} className="flex items-center gap-1.5 font-mono text-[10px] text-ink-muted">
-              <span className="h-2 w-2 flex-shrink-0 border" style={{ background: c.label, borderColor: c.border }} />
-              {c.name}
-            </span>
+        <div className="font-display text-3xl text-ink tracking-tight leading-none">
+          EVENT PROGRAMME
+        </div>
+        {/* Legend */}
+        <div className="mt-3 flex items-center justify-center gap-5">
+          {Object.entries(CAT).map(([k, v]) => (
+            <div key={k} className="flex items-center gap-1.5">
+              <div className="w-2 h-2 flex-shrink-0" style={{ background: v.color }} />
+              <span className="font-mono text-[9px] text-ink-muted uppercase tracking-wider">{v.label}</span>
+            </div>
           ))}
         </div>
       </div>
 
-      {/* Track */}
-      <div
-        ref={trackRef}
-        style={{
-          overflowX:  'scroll',
-          overflowY:  'hidden',
-          cursor:     'grab',
-          userSelect: 'none',
-          background: 'rgba(232,226,210,0.6)',
-          border:     '1px solid rgba(26,21,16,0.12)',
-        }}
-      >
-        <div style={{ position: 'relative', width: totalW, height: 170 }}>
+      {/* Programme list */}
+      <div>
+        {items.map((item, i) => {
 
-          {HOURS.map(({ label, min }) => {
-            const x = (min - START) * PPM
+          /* ── Hour separator ── */
+          if (item.type === 'hour') {
             return (
-              <div key={label} style={{ position: 'absolute', left: x, top: 0, bottom: 0, pointerEvents: 'none' }}>
-                <span style={{ position: 'absolute', top: 6, left: 5, fontSize: 9, color: '#7A6B5A', fontFamily: 'DM Mono, monospace', whiteSpace: 'nowrap', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-                  {label}
-                </span>
-                <div style={{ position: 'absolute', top: 24, bottom: 6, left: 0, width: 1, background: 'rgba(26,21,16,0.12)' }} />
+              <div key={'h' + i} className="flex items-center gap-3 py-2 -mx-6 px-6 bg-paper-dark border-y border-paper-mid">
+                <div className="font-display text-sm text-ink tracking-wider leading-none">{item.label}</div>
+                <div className="flex-1 border-t border-dashed border-paper-mid" />
               </div>
             )
-          })}
+          }
 
-          {blocks.map((block, i) => {
-            const left  = (toMin(block.time) - START) * PPM
-            const width = Math.max(parseDur(block.duration) * PPM - 3, 72)
-            const c     = CAT[block.category]
-            return (
-              <div
-                key={i}
-                style={{
-                  position:      'absolute',
-                  left,
-                  top:           28,
-                  width,
-                  height:        128,
-                  background:    c.bg,
-                  border:        `1px solid ${c.border}`,
-                  borderTop:     `2px solid ${c.label}`,
-                  padding:       '7px 9px',
-                  overflow:      'hidden',
-                  boxSizing:     'border-box',
-                  pointerEvents: 'none',
-                }}
-              >
-                <div style={{ fontSize: 9, color: c.label, fontFamily: 'DM Mono, monospace', marginBottom: 3, letterSpacing: '0.15em' }}>
-                  {block.time}
+          /* ── Event block ── */
+          const cat   = CAT[item.category]
+          const major = isMajor(item.item)
+
+          return (
+            <div
+              key={i}
+              className="flex items-stretch border-b border-paper-mid/50 group hover:bg-paper-dark/25 transition-colors"
+              style={{ minHeight: major ? 56 : 44 }}
+            >
+              {/* Time */}
+              <div className="w-[72px] flex-shrink-0 flex items-center justify-end pr-3">
+                <span className="font-mono text-[10px] text-ink-muted whitespace-nowrap">
+                  {fmt12h(item.time)}
+                </span>
+              </div>
+
+              {/* Category bar */}
+              <div className="w-[3px] flex-shrink-0 self-stretch my-1" style={{ background: cat.color }} />
+
+              {/* Content */}
+              <div className="flex-1 flex items-center justify-between gap-4 px-4 py-2">
+                <div className="min-w-0">
+                  {major ? (
+                    <div className="font-display text-base text-ink leading-tight tracking-wide">
+                      {item.item}
+                    </div>
+                  ) : (
+                    <div className="font-body text-sm text-ink leading-snug">
+                      {item.item}
+                    </div>
+                  )}
                 </div>
-                <div style={{ fontSize: 11, color: '#1A1510', lineHeight: 1.4, fontFamily: 'Libre Baskerville, serif' }}>
-                  {block.item}
-                </div>
-                {block.duration !== '—' && (
-                  <div style={{ position: 'absolute', bottom: 7, left: 9, fontSize: 9, color: c.label, opacity: 0.6, fontFamily: 'DM Mono, monospace' }}>
-                    {block.duration}
+
+                {/* Duration */}
+                {item.duration !== '—' && (
+                  <div className="flex-shrink-0 font-mono text-[10px] text-ink-muted whitespace-nowrap">
+                    {item.duration}
                   </div>
                 )}
               </div>
-            )
-          })}
-        </div>
+            </div>
+          )
+        })}
       </div>
 
-      <p className="mt-2 text-center font-mono text-[10px] text-ink-muted select-none">← drag to scroll →</p>
+      {/* Footer note */}
+      <div className="mt-4 pt-3 border-t border-paper-mid text-center">
+        <span className="font-serif italic text-[11px] text-ink-muted">{note}</span>
+      </div>
     </div>
   )
 }
