@@ -1,5 +1,6 @@
-import { useState } from 'react'
-import Countdown from './Countdown'
+import { useState, useEffect } from 'react'
+import { getCountdown } from '../api'
+import Stars from './Stars'
 
 const TOKEN = 'VGFzaGtlbnQyNTAhISE='
 
@@ -8,8 +9,15 @@ export default function LoginGate({ children }) {
     () => sessionStorage.getItem('f250_auth') === TOKEN
   )
   const [input, setInput] = useState('')
-  const [error, setError]   = useState(false)
-  const [shake, setShake]   = useState(false)
+  const [error, setError] = useState(false)
+  const [shake, setShake] = useState(false)
+  const [time, setTime]   = useState(getCountdown)
+
+  useEffect(() => {
+    if (authed) return
+    const id = setInterval(() => setTime(getCountdown()), 1000)
+    return () => clearInterval(id)
+  }, [authed])
 
   if (authed) return children
 
@@ -26,103 +34,166 @@ export default function LoginGate({ children }) {
     }
   }
 
+  const pad = v => String(v).padStart(2, '0')
+
   return (
-    <div className="min-h-screen bg-paper flex flex-col">
+    <div style={{
+      position: 'relative',
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '32px 20px',
+      overflow: 'hidden',
+    }}>
+      <Stars />
 
-      {/* ── Newspaper header ──────────────────────────────── */}
-      <header className="border-b-4 border-ink px-8 py-4">
-        <div className="flex items-center justify-between">
-          <div className="font-mono text-[9px] tracking-[0.4em] text-ink-muted uppercase leading-relaxed">
-            Tashkent, Uzbekistan<br />Vol. 250, No. 1
-          </div>
-          <h1 className="font-display text-[56px] sm:text-[72px] leading-none text-ink tracking-tight text-center">
-            FREEDOM 250
-          </h1>
-          <div className="font-mono text-[9px] tracking-[0.4em] text-ink-muted uppercase text-right leading-relaxed">
-            June 10, 2026<br />Mission Control
-          </div>
-        </div>
-        <div className="mt-3 h-[3px] bg-crimson" />
-        <div className="mt-0.5 h-[1px] bg-crimson" />
-      </header>
-
-      {/* ── Main content ──────────────────────────────────── */}
-      <div className="flex flex-1 items-center justify-center px-4 py-10">
-        <div className="w-full max-w-lg text-center">
-
-          {/* Stars */}
-          <div className="font-mono text-crimson text-xs tracking-[1em] mb-6">★ ★ ★ ★ ★</div>
-
-          {/* Headline */}
-          <div className="font-display text-[72px] sm:text-[96px] leading-[0.88] text-ink tracking-tight mb-2">
-            AMERICA'S
-          </div>
-          <div className="font-display text-[72px] sm:text-[96px] leading-[0.88] text-crimson tracking-tight">
-            250TH
-          </div>
-
-          {/* Divider rule */}
-          <div className="my-5 flex items-center gap-3">
-            <div className="flex-1 h-px bg-ink/20" />
-            <div className="font-serif italic text-sm text-ink-muted">
-              "Celebrating Two and a Half Centuries of Liberty"
+      <div className="card enter d0" style={{
+        position: 'relative',
+        zIndex: 1,
+        width: '100%',
+        maxWidth: 440,
+        padding: '36px 32px 30px',
+        animation: shake ? 'shake 0.4s ease' : undefined,
+      }}>
+        {/* Brand */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 14,
+          marginBottom: 24,
+        }}>
+          <div style={{
+            width: 44, height: 44, flexShrink: 0,
+            background: '#0b1e3f',
+            borderTop: '3px solid #d83933',
+            borderBottom: '3px solid #d83933',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontFamily: "'Merriweather', serif",
+            fontWeight: 900, fontSize: 13,
+          }}>250</div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 15, color: 'var(--fg1)', letterSpacing: '0.01em' }}>
+              Freedom 250
             </div>
-            <div className="flex-1 h-px bg-ink/20" />
+            <div style={{ fontSize: 11, color: 'var(--fg4)', marginTop: 2 }}>
+              U.S. Embassy Tashkent · Mission Control
+            </div>
           </div>
-
-          {/* Countdown */}
-          <Countdown />
-
-          {/* Divider */}
-          <div className="mt-8 mb-6 border-t border-paper-mid" />
-          <div className="font-mono text-[10px] tracking-[0.45em] text-ink-muted uppercase mb-5">
-            Authorized Personnel · Enter Password
-          </div>
-
-          {/* Form */}
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-3"
-            style={{ animation: shake ? 'shake 0.4s ease' : undefined }}
-          >
-            <input
-              type="password"
-              value={input}
-              autoFocus
-              placeholder="Password"
-              onChange={e => { setInput(e.target.value); setError(false) }}
-              className={`w-full bg-transparent border-b-2 border-t border-x px-4 py-3
-                text-ink placeholder-ink-muted/50 text-sm text-center tracking-[0.3em]
-                outline-none transition-colors duration-150 font-mono
-                ${error ? 'border-crimson' : 'border-ink/25 focus:border-b-crimson'}`}
-            />
-            {error && (
-              <p className="font-mono text-[11px] text-crimson tracking-wider">
-                Incorrect password. Try again.
-              </p>
-            )}
-            <button type="submit" className="btn-primary w-full py-3">
-              Enter Mission Control
-            </button>
-          </form>
-
         </div>
-      </div>
 
-      {/* ── Bottom rule ───────────────────────────────────── */}
-      <div className="border-t border-paper-mid px-8 py-3 text-center">
-        <span className="font-mono text-[9px] tracking-[0.35em] text-ink-muted/60 uppercase">
-          Uzexpocentre · Tashkent, Uzbekistan
-        </span>
+        {/* Headline */}
+        <h1 style={{
+          fontFamily: "'Merriweather', serif",
+          fontSize: 28, fontWeight: 900,
+          color: 'var(--fg1)', lineHeight: 1.15,
+          margin: '0 0 6px',
+        }}>
+          America's <span style={{ color: 'var(--red-soft)' }}>250th</span>
+        </h1>
+        <p style={{ fontSize: 13, color: 'var(--fg3)', margin: '0 0 22px', lineHeight: 1.5 }}>
+          Celebrating two and a half centuries of liberty.
+        </p>
+
+        {/* Mini countdown */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 6,
+          padding: '14px 12px',
+          background: 'rgba(0,0,0,0.3)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          borderRadius: 8,
+          marginBottom: 24,
+        }}>
+          {[
+            { v: time.days,    l: 'Days'    },
+            { v: time.hours,   l: 'Hours'   },
+            { v: time.minutes, l: 'Min'     },
+            { v: time.seconds, l: 'Sec'     },
+          ].map(b => (
+            <div key={b.l} style={{ textAlign: 'center' }}>
+              <div style={{
+                fontFamily: "'Source Code Pro', monospace",
+                fontSize: 22, fontWeight: 700,
+                color: 'var(--fg1)',
+                fontVariantNumeric: 'tabular-nums',
+                lineHeight: 1,
+              }}>
+                {pad(b.v)}
+              </div>
+              <div style={{
+                fontSize: 9, fontWeight: 700, letterSpacing: '0.18em',
+                textTransform: 'uppercase', color: 'var(--fg4)',
+                marginTop: 6,
+              }}>
+                {b.l}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Eyebrow */}
+        <div className="eyebrow" style={{ marginBottom: 10, fontSize: 10 }}>
+          Authorized Personnel · Enter Password
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <input
+            type="password"
+            value={input}
+            autoFocus
+            placeholder="Password"
+            onChange={e => { setInput(e.target.value); setError(false) }}
+            style={{
+              width: '100%',
+              padding: '11px 14px',
+              background: 'rgba(0,0,0,0.3)',
+              border: `1px solid ${error ? 'rgba(216,57,51,0.55)' : 'rgba(255,255,255,0.12)'}`,
+              borderRadius: 6,
+              color: 'var(--fg1)',
+              fontFamily: "'Inter', sans-serif",
+              fontSize: 14,
+              letterSpacing: '0.08em',
+              outline: 'none',
+              transition: 'border-color 150ms ease, box-shadow 150ms ease',
+            }}
+            onFocus={e => {
+              if (!error) {
+                e.target.style.borderColor = 'rgba(36,145,255,0.5)'
+                e.target.style.boxShadow = '0 0 0 3px rgba(36,145,255,0.15)'
+              }
+            }}
+            onBlur={e => {
+              e.target.style.borderColor = error ? 'rgba(216,57,51,0.55)' : 'rgba(255,255,255,0.12)'
+              e.target.style.boxShadow = 'none'
+            }}
+          />
+          {error && (
+            <p style={{ fontSize: 12, color: 'var(--red-soft)', margin: 0 }}>
+              Incorrect password. Try again.
+            </p>
+          )}
+          <button type="submit" className="btn btn-primary btn-md" style={{ width: '100%', justifyContent: 'center', padding: '12px 16px' }}>
+            Enter Mission Control
+          </button>
+        </form>
+
+        <div style={{
+          marginTop: 20, paddingTop: 16,
+          borderTop: '1px solid rgba(255,255,255,0.06)',
+          fontSize: 10, fontWeight: 600, letterSpacing: '0.18em',
+          textTransform: 'uppercase', color: 'var(--fg4)',
+          textAlign: 'center',
+        }}>
+          Uzexpocentre · Tashkent
+        </div>
       </div>
 
       <style>{`
         @keyframes shake {
           0%,100% { transform: translateX(0); }
-          20%      { transform: translateX(-8px); }
-          40%      { transform: translateX(8px); }
-          60%      { transform: translateX(-5px); }
-          80%      { transform: translateX(5px); }
+          20%     { transform: translateX(-8px); }
+          40%     { transform: translateX(8px); }
+          60%     { transform: translateX(-5px); }
+          80%     { transform: translateX(5px); }
         }
       `}</style>
     </div>
