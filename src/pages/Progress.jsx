@@ -3,83 +3,77 @@ import { getProgress, getContracts } from '../api'
 import ProgressBar from '../components/ProgressBar'
 import StatusTag from '../components/StatusTag'
 
-const WS_STATUS = {
-  ahead:      { kind: 'info',    label: 'Ahead',    bar: 'primary' },
-  'on-track': { kind: 'success', label: 'On track', bar: 'success' },
-  'at-risk':  { kind: 'error',   label: 'At risk',  bar: 'error'   },
+const WS_CFG = {
+  ahead:      { kind: 'info',    label: 'Ahead',    bar: 'blue'  },
+  'on-track': { kind: 'success', label: 'On Track', bar: 'green' },
+  'at-risk':  { kind: 'error',   label: 'At Risk',  bar: 'red'   },
 }
-
-const CONTRACT_STATUS = {
+const CONTRACT_CFG = {
   'awarded':     { kind: 'success', label: 'Awarded'     },
-  'in-progress': { kind: 'warn',    label: 'In progress' },
-  'not-started': { kind: 'error',   label: 'Not started' },
+  'in-progress': { kind: 'warn',    label: 'In Progress' },
+  'not-started': { kind: 'error',   label: 'Not Started' },
 }
-
-const fmtShort = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+const fmtShort = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null
 
 export default function Progress() {
   const { overall, initiatives, milestones } = getProgress()
   const contracts = getContracts()
 
   return (
-    <div className="px-10 py-8 max-w-[1240px]">
+    <div style={{ padding: '32px 40px 48px', maxWidth: 1280 }}>
 
-      {/* Page header */}
-      <div className="mb-8">
-        <p className="eyebrow mb-2">Tracker</p>
-        <h1>Progress</h1>
-        <p className="text-gov-gray-70 mt-2">
-          56-day countdown — mission readiness across all workstreams.
-        </p>
+      {/* Header */}
+      <div className="enter d0" style={{ marginBottom: 32 }}>
+        <div className="eyebrow" style={{ marginBottom: 6 }}>Tracker</div>
+        <h1 className="page-title">Progress</h1>
+        <p className="page-sub">56-day countdown — mission readiness across all workstreams.</p>
       </div>
 
       {/* Overall readiness */}
-      <div className="card card-rule-primary p-6 mb-8">
-        <div className="flex items-center justify-between mb-4">
+      <div className="card accent-blue enter d1" style={{ padding: '22px 28px', marginBottom: 28 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
           <div>
-            <div className="text-[12px] font-bold tracking-[0.04em] uppercase text-gov-gray-60 mb-1">
-              Overall mission readiness
+            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--fg4)' }}>
+              Overall Mission Readiness
             </div>
-            <div className="text-sm text-gov-gray-60">Across {initiatives.length} workstreams</div>
+            <div style={{ fontSize: 12, color: 'var(--fg4)', marginTop: 4 }}>Across {initiatives.length} workstreams</div>
           </div>
-          <div className="text-[40px] font-bold tabular-nums text-navy leading-none">{overall}%</div>
+          <div style={{ fontFamily: "'Merriweather',serif", fontSize: 48, fontWeight: 900, color: 'var(--blue-soft)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
+            {overall}%
+          </div>
         </div>
-        <ProgressBar value={overall} color="primary" height="lg"/>
+        <ProgressBar value={overall} color="blue" height="xl"/>
       </div>
 
-      {/* Procurement contracts */}
-      <section className="mb-8">
-        <h2 className="mb-4">Procurement / contracts</h2>
-        <div className="grid grid-cols-2 gap-4">
+      {/* Contracts */}
+      <section style={{ marginBottom: 28 }}>
+        <h2 className="section-title enter d2" style={{ marginBottom: 14 }}>Procurement / Contracts</h2>
+        <div className="enter d3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           {contracts.map(c => {
-            const s = CONTRACT_STATUS[c.status]
+            const cfg = CONTRACT_CFG[c.status]
             return (
-              <div key={c.id} className="card p-0 overflow-hidden">
-                <div className="flex items-center justify-between px-5 py-3 border-b border-gov-gray-10 bg-gov-gray-cool1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg leading-none">{c.icon}</span>
-                    <span className="font-bold text-gov-gray-90">{c.name}</span>
+              <div key={c.id} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                <div style={{
+                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  padding: '12px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)',
+                  background: 'rgba(0,0,0,0.2)',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                    <span style={{ fontSize: 18, lineHeight: 1 }}>{c.icon}</span>
+                    <span style={{ fontWeight: 600, color: 'var(--fg1)' }}>{c.name}</span>
                   </div>
-                  <StatusTag kind={s.kind}>{s.label}</StatusTag>
+                  <StatusTag kind={cfg.kind}>{cfg.label}</StatusTag>
                 </div>
-                <div className="px-5 py-4">
-                  <p className="text-sm text-gov-gray-70 leading-snug mb-4">{c.description}</p>
-                  <dl className="text-sm">
-                    {c.awardDate && (
-                      <div className="flex justify-between py-2 border-t border-gov-gray-10">
-                        <dt className="text-gov-gray-60">Awarded</dt>
-                        <dd className="font-semibold text-gov-green">{fmtShort(c.awardDate)}</dd>
-                      </div>
-                    )}
-                    {c.targetAward && (
-                      <div className="flex justify-between py-2 border-t border-gov-gray-10">
-                        <dt className="text-gov-gray-60">Target award</dt>
-                        <dd className="font-semibold text-gov-gold-dark">{fmtShort(c.targetAward)}</dd>
-                      </div>
-                    )}
-                  </dl>
-                  <div className="mt-3 px-3 py-2.5 bg-gov-gray-cool1 border-l-4 border-navy text-[13px] text-gov-gray-70">
-                    <strong className="text-gov-gray-90">Next: </strong>{c.nextStep}
+                <div style={{ padding: '14px 18px' }}>
+                  <p style={{ fontSize: 12, color: 'var(--fg4)', lineHeight: 1.55, marginBottom: 12 }}>{c.description}</p>
+                  {c.awardDate   && <div style={{ fontSize: 12, color: 'var(--fg4)', marginBottom: 6 }}>Awarded: <span style={{ color: 'var(--green-soft)', fontWeight: 600 }}>{fmtShort(c.awardDate)}</span></div>}
+                  {c.targetAward && <div style={{ fontSize: 12, color: 'var(--fg4)', marginBottom: 6 }}>Target award: <span style={{ color: 'var(--gold-soft)', fontWeight: 600 }}>{fmtShort(c.targetAward)}</span></div>}
+                  <div style={{
+                    marginTop: 10, padding: '8px 12px', borderRadius: 6,
+                    background: 'var(--blue-dim)', border: '1px solid rgba(36,145,255,0.18)',
+                    fontSize: 12, color: 'var(--blue-soft)',
+                  }}>
+                    Next: {c.nextStep}
                   </div>
                 </div>
               </div>
@@ -89,34 +83,34 @@ export default function Progress() {
       </section>
 
       {/* Workstreams table */}
-      <section className="mb-8">
-        <h2 className="mb-4">Workstreams</h2>
-        <div className="card p-0 overflow-hidden">
-          <table className="data-table">
+      <section className="enter d4" style={{ marginBottom: 28 }}>
+        <h2 className="section-title" style={{ marginBottom: 14 }}>Workstreams</h2>
+        <div className="table-wrap">
+          <table className="dtable">
             <thead>
               <tr>
                 <th>Workstream</th>
-                <th style={{width:160}}>Owner</th>
-                <th style={{width:100}}>Due</th>
-                <th style={{width:110}}>Status</th>
-                <th style={{width:220}}>Progress</th>
-                <th style={{width:56, textAlign:'right'}}>%</th>
+                <th style={{ width: 150 }}>Owner</th>
+                <th style={{ width: 90 }}>Due</th>
+                <th style={{ width: 110 }}>Status</th>
+                <th style={{ width: 210 }}>Progress</th>
+                <th style={{ width: 52, textAlign: 'right' }}>%</th>
               </tr>
             </thead>
             <tbody>
               {initiatives.map(init => {
-                const s = WS_STATUS[init.status]
+                const cfg = WS_CFG[init.status]
                 return (
                   <tr key={init.id}>
                     <td>
-                      <div className="font-semibold text-gov-gray-90">{init.name}</div>
-                      <div className="text-[13px] text-gov-gray-60 mt-0.5">{init.note}</div>
+                      <div style={{ fontWeight: 600, color: 'var(--fg1)' }}>{init.name}</div>
+                      <div style={{ fontSize: 11, color: 'var(--fg4)', marginTop: 2 }}>{init.note}</div>
                     </td>
-                    <td className="meta">{init.owner}</td>
-                    <td className="font-mono font-semibold">{init.deadline}</td>
-                    <td><StatusTag kind={s.kind}>{s.label}</StatusTag></td>
-                    <td><ProgressBar value={init.progress} color={s.bar} height="md"/></td>
-                    <td className="text-right font-bold tabular-nums">{init.progress}%</td>
+                    <td className="muted">{init.owner}</td>
+                    <td style={{ fontFamily: "'Source Code Pro',monospace", fontWeight: 600, color: 'var(--fg2)', fontVariantNumeric: 'tabular-nums' }}>{init.deadline}</td>
+                    <td><StatusTag kind={cfg.kind}>{cfg.label}</StatusTag></td>
+                    <td style={{ verticalAlign: 'middle' }}><ProgressBar value={init.progress} color={cfg.bar} height="md"/></td>
+                    <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--fg1)', fontVariantNumeric: 'tabular-nums' }}>{init.progress}%</td>
                   </tr>
                 )
               })}
@@ -126,24 +120,25 @@ export default function Progress() {
       </section>
 
       {/* Milestones */}
-      <section>
-        <h2 className="mb-4">Key milestones</h2>
-        <div className="card p-6">
-          <div className="relative">
-            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gov-gray-10"/>
-            <div className="flex flex-col gap-5">
+      <section className="enter d5">
+        <h2 className="section-title" style={{ marginBottom: 14 }}>Key Milestones</h2>
+        <div className="card" style={{ padding: 24 }}>
+          <div style={{ position: 'relative' }}>
+            <div style={{ position: 'absolute', left: 7, top: 4, bottom: 4, width: 1, background: 'rgba(255,255,255,0.07)' }}/>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               {milestones.map(m => (
-                <div key={m.id} className="relative flex items-start gap-5 pl-8">
-                  <div className={`absolute left-0 top-1 w-3.5 h-3.5 rounded-full border-2 ${
-                    m.status === 'completed'
-                      ? 'border-gov-green bg-gov-green'
-                      : 'border-navy bg-white'
-                  }`}/>
-                  <div className="flex-1 min-w-0">
-                    <div className={`text-sm font-medium ${
-                      m.status === 'completed' ? 'text-gov-gray-60 line-through' : 'text-gov-gray-90'
-                    }`}>{m.name}</div>
-                    <div className="text-[13px] text-gov-gray-60 mt-0.5">
+                <div key={m.id} style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 20, paddingLeft: 28 }}>
+                  <div style={{
+                    position: 'absolute', left: 0, top: 3,
+                    width: 14, height: 14, borderRadius: '50%',
+                    border: `2px solid ${m.status === 'completed' ? 'var(--green)' : 'rgba(36,145,255,0.4)'}`,
+                    background: m.status === 'completed' ? 'var(--green)' : 'var(--bg)',
+                  }}/>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 14, fontWeight: 500, color: m.status === 'completed' ? 'var(--fg4)' : 'var(--fg1)', textDecoration: m.status === 'completed' ? 'line-through' : 'none' }}>
+                      {m.name}
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--fg4)', marginTop: 2 }}>
                       {new Date(m.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </div>
                   </div>

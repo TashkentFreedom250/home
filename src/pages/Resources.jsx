@@ -2,90 +2,83 @@
 import { getSlackChannels, getDocuments } from '../api'
 import StatusTag from '../components/StatusTag'
 
-const ACTIVITY_KIND = {
-  high:   'success',
-  medium: 'warn',
-  low:    'subtle',
-}
+const ACTIVITY_KIND = { high: 'success', medium: 'warn', low: 'subtle' }
 
 export default function Resources() {
   const channels = getSlackChannels()
   const docs     = getDocuments()
 
   return (
-    <div className="px-10 py-8 max-w-[1240px]">
+    <div style={{ padding: '32px 40px 48px', maxWidth: 1280 }}>
 
-      {/* Page header */}
-      <div className="mb-8">
-        <p className="eyebrow mb-2">Hub</p>
-        <h1>Resources</h1>
-        <p className="text-gov-gray-70 mt-2">
-          Communication channels, planning documents, and vendor files.
-        </p>
+      {/* Header */}
+      <div className="enter d0" style={{ marginBottom: 32 }}>
+        <div className="eyebrow" style={{ marginBottom: 6 }}>Hub</div>
+        <h1 className="page-title">Resources</h1>
+        <p className="page-sub">Communication channels, planning documents, and vendor files.</p>
       </div>
 
       {/* Slack channels */}
-      <section className="mb-10">
-        <div className="flex items-center justify-between mb-4">
-          <h2>Slack channels</h2>
-          <span className="text-[13px] text-gov-gray-60">{channels.length} channels</span>
+      <section style={{ marginBottom: 32 }}>
+        <div className="enter d1" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <span className="section-title">Slack Channels</span>
+          <span style={{ fontSize: 12, color: 'var(--fg4)' }}>{channels.length} channels</span>
         </div>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="enter d2" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
           {channels.map(ch => (
-            <div
-              key={ch.id}
-              className="card p-4 cursor-pointer hover:bg-navy-lighter transition-colors"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <span className="font-mono font-bold text-navy text-[13px] break-all leading-snug">
+            <div key={ch.id} className="card lift" style={{ padding: 16, cursor: 'pointer' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+                <span style={{
+                  fontFamily: "'Source Code Pro',monospace",
+                  fontWeight: 700, color: 'var(--blue-soft)',
+                  fontSize: 12, wordBreak: 'break-all', lineHeight: 1.3,
+                }}>
                   {ch.name}
                 </span>
-                <StatusTag kind={ACTIVITY_KIND[ch.activity]} className="ml-2 shrink-0">
-                  {ch.activity}
-                </StatusTag>
+                <StatusTag kind={ACTIVITY_KIND[ch.activity]} className="ml-2">{ch.activity}</StatusTag>
               </div>
-              <p className="text-[13px] text-gov-gray-70 leading-snug mb-3">{ch.description}</p>
-              <div className="text-[13px] text-gov-gray-60">{ch.members} members</div>
+              <p style={{ fontSize: 12, color: 'var(--fg4)', lineHeight: 1.5, marginBottom: 10 }}>{ch.description}</p>
+              <div style={{ fontSize: 11, color: 'var(--fg4)' }}>{ch.members} members</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Planning documents */}
-      <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2>Planning documents</h2>
-          <button className="btn btn-outline btn-sm">Upload document</button>
+      {/* Documents */}
+      <section className="enter d3">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+          <span className="section-title">Planning Documents</span>
+          <button className="btn btn-ghost btn-sm">Upload document</button>
         </div>
-        <div className="card p-0 overflow-hidden">
-          <table className="data-table">
+        <div className="table-wrap">
+          <table className="dtable">
             <thead>
               <tr>
-                <th style={{width:72}}>Type</th>
+                <th style={{ width: 65 }}>Type</th>
                 <th>Title</th>
-                <th style={{width:140}}>Category</th>
-                <th style={{width:110}}>Updated</th>
-                <th style={{width:90}}></th>
+                <th style={{ width: 130 }}>Category</th>
+                <th style={{ width: 100 }}>Updated</th>
+                <th style={{ width: 80 }}></th>
               </tr>
             </thead>
             <tbody>
               {docs.map(doc => (
-                <tr key={doc.id} className="row-link">
+                <tr key={doc.id} className="row-hover">
                   <td>
                     <StatusTag kind={doc.type === 'doc' ? 'subtle' : 'info'}>
                       {doc.type === 'doc' ? 'Doc' : 'Link'}
                     </StatusTag>
                   </td>
                   <td>
-                    <div className="font-semibold text-gov-gray-90">{doc.title}</div>
-                    <div className="text-[13px] text-gov-gray-60 mt-0.5">{doc.description}</div>
+                    <div style={{ fontWeight: 600, color: 'var(--fg1)' }}>{doc.title}</div>
+                    <div style={{ fontSize: 12, color: 'var(--fg4)', marginTop: 2 }}>{doc.description}</div>
                   </td>
-                  <td className="meta">{doc.category}</td>
-                  <td className="font-mono text-[13px] text-gov-gray-60">
+                  <td className="muted">{doc.category}</td>
+                  <td style={{ fontFamily: "'Source Code Pro',monospace", fontSize: 12, color: 'var(--fg4)', fontVariantNumeric: 'tabular-nums' }}>
                     {new Date(doc.updated).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </td>
                   <td>
-                    <button className="btn btn-ghost btn-sm">Open →</button>
+                    <button className="link-btn" style={{ fontSize: 12 }}>Open →</button>
                   </td>
                 </tr>
               ))}

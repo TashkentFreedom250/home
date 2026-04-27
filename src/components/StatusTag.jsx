@@ -1,19 +1,19 @@
 // src/components/StatusTag.jsx
-// New shared component — import and use wherever status labels appear.
-// Usage: <StatusTag kind="error">Not started</StatusTag>
+// Usage: <StatusTag kind="error">Not Started</StatusTag>
+// kinds: error | success | warn | info | ink | subtle
 
-const KIND_CLASS = {
-  info:    'tag-info',
+const KIND_CLS = {
+  error:   'tag-error',
   success: 'tag-success',
   warn:    'tag-warn',
-  error:   'tag-error',
+  info:    'tag-info',
   ink:     'tag-ink',
   subtle:  'tag-subtle',
 }
 
 export default function StatusTag({ kind = 'subtle', children, className = '' }) {
   return (
-    <span className={`tag ${KIND_CLASS[kind] ?? 'tag-subtle'} ${className}`}>
+    <span className={`tag ${KIND_CLS[kind] ?? 'tag-subtle'} ${className}`}>
       {children}
     </span>
   )

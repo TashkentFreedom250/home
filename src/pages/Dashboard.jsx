@@ -2,23 +2,17 @@
 import { Link } from 'react-router-dom'
 import { getStats, getUpcomingEvents, getEventDetails, getContracts, getActions } from '../api'
 import Countdown from '../components/Countdown'
+import ProgressBar from '../components/ProgressBar'
 import StatusTag from '../components/StatusTag'
 
-const CONTRACT_STATUS = {
-  'awarded':     { kind: 'success', label: 'Awarded',      rule: 'card-rule-success' },
-  'in-progress': { kind: 'warn',    label: 'In progress',  rule: 'card-rule-warning' },
-  'not-started': { kind: 'error',   label: 'Not started',  rule: 'card-rule-error'   },
+const CONTRACT_CFG = {
+  'awarded':     { kind: 'success', label: 'Awarded',     accent: 'accent-green' },
+  'in-progress': { kind: 'warn',    label: 'In Progress', accent: 'accent-gold'  },
+  'not-started': { kind: 'error',   label: 'Not Started', accent: 'accent-red'   },
 }
-
-const STAT_RULES = ['card-rule-primary', 'card-rule-success', 'card-rule-error', 'card-rule-warning']
-
-const EVENT_TYPE_KIND = {
-  'Virtual':   'info',
-  'In-Person': 'info',
-  'Internal':  'subtle',
-}
-
-const fmtDate = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+const STAT_ACCENTS = ['accent-blue', 'accent-green', 'accent-red', 'accent-gold']
+const EVENT_TYPE   = { 'Virtual': 'info', 'In-Person': 'info', 'Internal': 'subtle' }
+const fmtDate = d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
 export default function Dashboard() {
   const stats     = getStats()
@@ -28,59 +22,56 @@ export default function Dashboard() {
   const urgentCount = getActions().filter(a => a.priority === 'high').length
 
   const statCards = [
-    { label: 'Expected guests',   value: stats.attendance.value, sub: stats.attendance.change },
-    { label: 'Contracts awarded', value: stats.contracts.value,  sub: stats.contracts.change  },
-    { label: 'Days to showtime',  value: stats.daysLeft.value,   sub: 'June 10, 2026'         },
-    { label: 'Urgent actions',    value: String(urgentCount),    sub: 'Need decisions this week' },
+    { label: 'Expected Guests',   value: stats.attendance.value, sub: stats.attendance.change },
+    { label: 'Contracts Awarded', value: stats.contracts.value,  sub: stats.contracts.change  },
+    { label: 'Days to Showtime',  value: stats.daysLeft.value,   sub: 'June 10, 2026 · 15:00' },
+    { label: 'Urgent Actions',    value: String(urgentCount),    sub: 'Need decisions this week' },
   ]
 
   return (
     <>
       <Countdown/>
-
-      <div className="px-10 py-8 max-w-[1240px]">
+      <div style={{ padding: '32px 40px 48px', maxWidth: 1280 }}>
 
         {/* Page header */}
-        <div className="mb-8">
-          <p className="eyebrow mb-2">Mission control</p>
-          <h1>Freedom 250 Dashboard</h1>
-          <p className="text-gov-gray-70 mt-2">{event.host} · {event.location} · {event.city}</p>
+        <div className="enter d0" style={{ marginBottom: 32 }}>
+          <div className="eyebrow" style={{ marginBottom: 6 }}>Mission Control</div>
+          <h1 className="page-title">Freedom 250 Dashboard</h1>
+          <p className="page-sub">{event.host} · {event.location} · {event.city}</p>
         </div>
 
         {/* KPI stat cards */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className="enter d1" style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16, marginBottom: 32 }}>
           {statCards.map((s, i) => (
-            <div key={i} className={`card ${STAT_RULES[i]} p-5`}>
-              <div className="text-[12px] font-bold tracking-[0.04em] uppercase text-gov-gray-60 mb-1">
+            <div key={i} className={`card lift ${STAT_ACCENTS[i]}`} style={{ padding: '20px 22px' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--fg4)', marginBottom: 8 }}>
                 {s.label}
               </div>
-              <div className="text-[32px] font-bold tabular-nums text-gov-gray-90 leading-none">
+              <div style={{ fontSize: 32, fontWeight: 700, color: 'var(--fg1)', fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
                 {s.value}
               </div>
-              <div className="text-[13px] text-gov-gray-60 mt-1.5">{s.sub}</div>
+              <div style={{ fontSize: 12, color: 'var(--fg4)', marginTop: 6 }}>{s.sub}</div>
             </div>
           ))}
         </div>
 
         {/* Procurement status */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <h2>Procurement status</h2>
-            <Link to="/progress" className="text-[13px] text-navy hover:text-navy-dark font-medium">
-              View full progress →
-            </Link>
+        <div className="enter d2" style={{ marginBottom: 32 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+            <span className="section-title">Procurement Status</span>
+            <Link to="/progress" className="link-btn">Full details →</Link>
           </div>
-          <div className="grid grid-cols-4 gap-4">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 16 }}>
             {contracts.map(c => {
-              const s = CONTRACT_STATUS[c.status]
+              const cfg = CONTRACT_CFG[c.status]
               return (
-                <div key={c.id} className={`card ${s.rule} p-5`}>
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="text-xl leading-none">{c.icon}</span>
-                    <StatusTag kind={s.kind}>{s.label}</StatusTag>
+                <div key={c.id} className={`card lift ${cfg.accent}`} style={{ padding: 20 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
+                    <span style={{ fontSize: 22, lineHeight: 1 }}>{c.icon}</span>
+                    <StatusTag kind={cfg.kind}>{cfg.label}</StatusTag>
                   </div>
-                  <div className="font-bold text-gov-gray-90 text-[15px] mb-1">{c.name}</div>
-                  <p className="text-[13px] text-gov-gray-60 leading-snug">{c.nextStep}</p>
+                  <div style={{ fontWeight: 600, color: 'var(--fg1)', marginBottom: 6 }}>{c.name}</div>
+                  <p style={{ fontSize: 12, color: 'var(--fg4)', lineHeight: 1.55 }}>{c.nextStep}</p>
                 </div>
               )
             })}
@@ -88,59 +79,60 @@ export default function Dashboard() {
         </div>
 
         {/* Bottom: key dates + quick nav */}
-        <div className="grid grid-cols-[1.2fr_1fr] gap-6">
+        <div className="enter d3" style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 20 }}>
 
-          {/* Upcoming key dates */}
-          <div className="card p-0 overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-gov-gray-10">
-              <h3>Upcoming key dates</h3>
-              <Link to="/action" className="text-[13px] text-navy hover:text-navy-dark font-medium">
-                Timeline →
-              </Link>
+          {/* Key dates */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+              <span className="section-title">Upcoming Key Dates</span>
+              <Link to="/action" className="link-btn">Timeline →</Link>
             </div>
-            <table className="data-table">
-              <thead>
-                <tr>
-                  <th style={{width:90}}>Date</th>
-                  <th>Event</th>
-                  <th style={{width:140}}>Location</th>
-                  <th style={{width:100}}>Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.map(ev => (
-                  <tr key={ev.id} className="row-link">
-                    <td className="font-mono font-semibold text-navy-dark">{fmtDate(ev.date)}</td>
-                    <td className="font-medium">{ev.name}</td>
-                    <td className="meta">{ev.location}</td>
-                    <td>
-                      <StatusTag kind={EVENT_TYPE_KIND[ev.type] ?? 'subtle'}>{ev.type}</StatusTag>
-                    </td>
+            <div className="table-wrap">
+              <table className="dtable">
+                <thead>
+                  <tr>
+                    <th style={{ width: 80 }}>Date</th>
+                    <th>Event</th>
+                    <th style={{ width: 130 }}>Location</th>
+                    <th style={{ width: 90 }}>Type</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {events.map(ev => (
+                    <tr key={ev.id} className="row-hover">
+                      <td className="strong" style={{ fontFamily: "'Source Code Pro',monospace", color: 'var(--blue-soft)', fontVariantNumeric: 'tabular-nums' }}>
+                        {fmtDate(ev.date)}
+                      </td>
+                      <td className="strong">{ev.name}</td>
+                      <td className="muted">{ev.location}</td>
+                      <td><StatusTag kind={EVENT_TYPE[ev.type] ?? 'subtle'}>{ev.type}</StatusTag></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
           {/* Quick nav */}
-          <div className="card p-5 bg-gov-gray-cool1">
-            <h3 className="mb-4">Quick navigation</h3>
-            <div className="flex flex-col gap-3">
+          <div>
+            <div style={{ marginBottom: 14 }}>
+              <span className="section-title">Quick Navigate</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {[
-                { to: '/progress',  label: 'Progress & timeline',    sub: 'Workstreams, contracts, 8-week countdown' },
-                { to: '/resources', label: 'Slack & resource hub',   sub: 'Channels, docs, vendor briefs'            },
-                { to: '/action',    label: "Chair's command center", sub: 'Critical actions, program rundown'         },
-              ].map(item => (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className="flex items-center justify-between bg-white border border-gov-gray-10 px-4 py-3.5 no-underline hover:bg-navy-lighter transition-colors"
+                { to: '/progress',  label: 'Progress & Timeline',    sub: 'Workstreams, contracts, 8-week countdown' },
+                { to: '/resources', label: 'Slack & Resource Hub',   sub: 'Channels, docs, vendor briefs'            },
+                { to: '/action',    label: "Chair's Command Center", sub: 'Critical actions, program rundown'         },
+              ].map(it => (
+                <Link key={it.to} to={it.to}
+                  className="card lift"
+                  style={{ padding: '14px 18px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', textDecoration: 'none' }}
                 >
                   <div>
-                    <div className="font-bold text-gov-gray-90 text-[15px]">{item.label}</div>
-                    <div className="text-[13px] text-gov-gray-60 mt-0.5">{item.sub}</div>
+                    <div style={{ fontWeight: 600, color: 'var(--fg1)', marginBottom: 3 }}>{it.label}</div>
+                    <div style={{ fontSize: 12, color: 'var(--fg4)' }}>{it.sub}</div>
                   </div>
-                  <span className="text-navy font-bold ml-4">→</span>
+                  <span style={{ color: 'var(--blue-soft)', fontWeight: 700, marginLeft: 12 }}>→</span>
                 </Link>
               ))}
             </div>

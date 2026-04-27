@@ -1,151 +1,117 @@
 // src/components/Layout.jsx
-// Federal three-tier chrome: gov banner → navy masthead → breadcrumb + sidebar + main.
-// Replaces the original dark sidebar-only layout.
+// Dark glass sidebar layout. Stars behind everything.
+// No .gov top chrome — sidebar-only like the original structure.
 
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink } from 'react-router-dom'
+import Stars from './Stars'
 
-// ── Nav icons ──────────────────────────────────────────────────────────────
-function IconDashboard() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1"/>
-      <rect x="14" y="3" width="7" height="7" rx="1"/>
-      <rect x="3" y="14" width="7" height="7" rx="1"/>
-      <rect x="14" y="14" width="7" height="7" rx="1"/>
-    </svg>
-  )
-}
-function IconProgress() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="20" x2="18" y2="10"/>
-      <line x1="12" y1="20" x2="12" y2="4"/>
-      <line x1="6"  y1="20" x2="6"  y2="14"/>
-      <line x1="2"  y1="20" x2="22" y2="20"/>
-    </svg>
-  )
-}
-function IconResources() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-    </svg>
-  )
-}
-function IconAction() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-    </svg>
-  )
-}
+function IconDashboard() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> }
+function IconProgress()  { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg> }
+function IconResources() { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> }
+function IconAction()    { return <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> }
 
 const NAV = [
-  { path: '/',          label: 'Dashboard', Icon: IconDashboard, end: true,  actionCount: 0 },
-  { path: '/progress',  label: 'Progress',  Icon: IconProgress,  end: false, actionCount: 0 },
-  { path: '/resources', label: 'Resources', Icon: IconResources, end: false, actionCount: 0 },
-  { path: '/action',    label: 'Action',    Icon: IconAction,    end: false, actionCount: 4 },
+  { path: '/',          label: 'Dashboard', Icon: IconDashboard, end: true  },
+  { path: '/progress',  label: 'Progress',  Icon: IconProgress,  end: false },
+  { path: '/resources', label: 'Resources', Icon: IconResources, end: false },
+  { path: '/action',    label: 'Action',    Icon: IconAction,    end: false, badge: 4 },
 ]
 
-const PAGE_LABELS = {
-  '/':          'Dashboard',
-  '/progress':  'Progress',
-  '/resources': 'Resources',
-  '/action':    'Action',
-}
-
 export default function Layout() {
-  const location = useLocation()
-  const currentLabel = PAGE_LABELS[location.pathname] ?? ''
-
   return (
-    <div className="flex flex-col h-full overflow-hidden">
+    <div style={{ position: 'relative', display: 'flex', height: '100vh', overflow: 'hidden' }}>
+      <Stars/>
 
-      {/* ── Masthead ──────────────────────────────────────────────── */}
-      <header className="bg-navy-darker border-b-[6px] border-gov-red px-6 py-4 flex items-center gap-4">
-        {/* Seal */}
-        <div className="w-12 h-12 bg-navy-darkest border-t-4 border-b-4 border-gov-red flex items-center justify-content-center shrink-0">
-          <span className="font-serif font-black text-white text-sm w-full text-center">250</span>
-        </div>
-        {/* Title */}
-        <div className="leading-tight">
-          <div className="font-sans font-bold text-xl text-white">Freedom 250</div>
-          <div className="font-sans text-[12.5px] text-[#9bb4d4]">
-            U.S. Embassy Tashkent · America's 250th Anniversary
+      {/* Sidebar */}
+      <aside style={{
+        width: 240, flexShrink: 0,
+        background: 'rgba(5,15,40,0.92)',
+        borderRight: '1px solid rgba(255,255,255,0.07)',
+        display: 'flex', flexDirection: 'column',
+        position: 'relative', zIndex: 10,
+      }}>
+        {/* Brand */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: 12,
+          padding: '20px 18px',
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+        }}>
+          <div style={{
+            width: 40, height: 40, flexShrink: 0,
+            background: '#0b1e3f',
+            borderTop: '3px solid #d83933',
+            borderBottom: '3px solid #d83933',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#fff', fontFamily: "'Merriweather', serif",
+            fontWeight: 900, fontSize: 12,
+          }}>250</div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 14, color: '#fff' }}>Freedom 250</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.35)', marginTop: 1 }}>
+              U.S. Embassy Tashkent
+            </div>
           </div>
         </div>
-        {/* Top nav */}
-        <nav className="ml-auto flex items-center gap-6 text-[15px]">
-          {NAV.map(({ path, label, end, actionCount }) => (
+
+        {/* Section label */}
+        <div style={{
+          padding: '14px 18px 6px',
+          fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase',
+          color: 'rgba(255,255,255,0.25)',
+          borderBottom: '1px solid rgba(255,255,255,0.07)',
+        }}>
+          Event Operations
+        </div>
+
+        {/* Nav */}
+        <nav style={{ flex: 1, padding: 8, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {NAV.map(({ path, label, Icon, end, badge }) => (
             <NavLink
               key={path}
               to={path}
               end={end}
-              className={({ isActive }) =>
-                `text-white no-underline pb-1 border-b-[3px] transition-colors ${
-                  isActive ? 'border-gov-red font-bold' : 'border-transparent font-medium hover:border-white/40'
-                }`
-              }
+              className={({ isActive }) => `nav-item${isActive ? ' active' : ''}`}
             >
-              {label}
-              {actionCount > 0 && (
-                <span className="ml-1.5 bg-gov-red text-white text-[11px] font-bold px-1.5 rounded-full">
-                  {actionCount}
+              <Icon/>
+              <span>{label}</span>
+              {badge && (
+                <span style={{
+                  marginLeft: 'auto',
+                  background: '#d83933', color: '#fff',
+                  fontSize: 10, fontWeight: 700,
+                  padding: '2px 6px', borderRadius: 99,
+                }}>
+                  {badge}
                 </span>
               )}
             </NavLink>
           ))}
         </nav>
-      </header>
 
-      {/* ── Tier 3: Breadcrumb ────────────────────────────────────── */}
-      <div className="bg-white border-b border-gov-gray-10 px-10 py-3 text-[13px] text-gov-gray-60">
-        <span>Mission Control</span>
-        <span className="mx-1.5 text-gov-gray-30">›</span>
-        <span className="font-semibold text-gov-gray-90">{currentLabel}</span>
-      </div>
-
-      {/* ── Body layout ───────────────────────────────────────────── */}
-      <div className="flex flex-1 overflow-hidden">
-
-        {/* Sidebar */}
-        <aside className="w-60 flex-shrink-0 bg-white border-r border-gov-gray-10 flex flex-col">
-          <div className="px-4 py-3 text-[11px] font-bold tracking-[0.06em] uppercase text-gov-gray-60 border-b border-gov-gray-10">
-            Event operations
+        {/* Footer */}
+        <div style={{
+          borderTop: '1px solid rgba(255,255,255,0.07)',
+          padding: '14px 18px',
+          fontSize: 12, color: 'rgba(255,255,255,0.3)',
+        }}>
+          Signed in as
+          <strong style={{
+            display: 'block', color: 'rgba(255,255,255,0.6)',
+            fontSize: 13, fontWeight: 600, marginTop: 1,
+          }}>
+            Chair · You
+          </strong>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 8 }}>
+            <span className="live-dot"/>
+            <span style={{ fontSize: 11 }}>Mission active · Jun 10, 2026</span>
           </div>
-          <nav className="flex flex-col py-1">
-            {NAV.map(({ path, label, Icon, end, actionCount }) => (
-              <NavLink
-                key={path}
-                to={path}
-                end={end}
-                className={({ isActive }) =>
-                  `nav-item ${isActive ? 'nav-item-active' : ''}`
-                }
-              >
-                <Icon/>
-                <span>{label}</span>
-                {actionCount > 0 && (
-                  <span className="ml-auto bg-gov-red text-white text-[11px] font-bold px-1.5 rounded-full">
-                    {actionCount}
-                  </span>
-                )}
-              </NavLink>
-            ))}
-          </nav>
-          <div className="mt-auto px-4 py-3 border-t border-gov-gray-10 text-[12px] text-gov-gray-60">
-            Signed in as
-            <strong className="block text-sm font-semibold text-gov-gray-90">Chair · You</strong>
-          </div>
-        </aside>
+        </div>
+      </aside>
 
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto bg-white">
-          <Outlet/>
-        </main>
-
-      </div>
+      {/* Main */}
+      <main style={{ flex: 1, overflowY: 'auto', position: 'relative', zIndex: 1 }}>
+        <Outlet/>
+      </main>
     </div>
   )
 }
