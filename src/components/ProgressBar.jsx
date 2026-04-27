@@ -1,17 +1,25 @@
-const fillMap = {
-  gold:  'bg-gold',
-  red:   'bg-crimson',
-  blue:  'bg-navy',
-  green: 'bg-green-700',
-}
-const heightMap = { sm: 'h-1', md: 'h-1.5', lg: 'h-2' }
+// src/components/ProgressBar.jsx
+// Flat rectangular progress bar. color: 'primary' | 'success' | 'warning' | 'error'
 
-export default function ProgressBar({ value, color = 'gold', height = 'md' }) {
+const COLOR_MAP = {
+  primary: 'bg-navy',
+  success: 'bg-gov-green',
+  warning: 'bg-gov-gold',
+  error:   'bg-gov-red',
+}
+
+const HEIGHT_MAP = {
+  sm: 'h-1.5',
+  md: 'h-2.5',
+  lg: 'h-3.5',
+}
+
+export default function ProgressBar({ value, color = 'primary', height = 'md' }) {
   const pct = Math.min(100, Math.max(0, value))
   return (
-    <div className={`w-full bg-ink/10 overflow-hidden ${heightMap[height]}`}>
+    <div className={`pbar-track ${HEIGHT_MAP[height]}`}>
       <div
-        className={`${heightMap[height]} ${fillMap[color]} transition-all duration-700 ease-out`}
+        className={`pbar-fill ${HEIGHT_MAP[height]} ${COLOR_MAP[color]}`}
         style={{ width: `${pct}%` }}
       />
     </div>

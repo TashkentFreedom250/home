@@ -3,122 +3,111 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --paper:       #F2EDE1;
-    --paper-card:  #FDFAF5;
-    --paper-dark:  #E8E2D2;
-    --ink:         #1A1510;
-    --ink-light:   #4A3F33;
-    --ink-muted:   #7A6B5A;
-    --crimson:     #C8293C;
-    --navy:        #1B3A6B;
-    --gold:        #C8891A;
-    --rule:        #C8BFAE;
+  html, body, #root {
+    height: 100%;
   }
 
   body {
-    background-color: var(--paper);
-    color: var(--ink);
-    font-family: 'Libre Baskerville', serif;
+    @apply bg-white text-gov-gray-90 font-sans;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Paper grain overlay */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    opacity: 0.038;
-    pointer-events: none;
-    z-index: 9998;
-    mix-blend-mode: multiply;
+  h1 { @apply font-serif text-[36px] font-black text-gov-gray-90 leading-tight; }
+  h2 { @apply font-serif text-[22px] font-bold text-gov-gray-90 leading-snug; }
+  h3 { @apply font-sans text-base font-bold text-gov-gray-90; }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid #2491ff;
+    outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* ── Cards ───────────────────────────────────────────────── */
+  /* ── Cards ────────────────────────────────────────────────────── */
   .card {
-    background: var(--paper-card);
-    border: 1px solid var(--rule);
-    border-top: 3px solid var(--crimson);
-    border-radius: 0;
-    padding: 1.25rem 1.5rem;
-    position: relative;
-    box-shadow: 2px 3px 0 rgba(26,21,16,0.05);
+    @apply bg-white border border-gov-gray-10 rounded-sm;
   }
-  .card-glow-gold { border-top-color: var(--gold); }
-  .card-glow-red  { border-top-color: var(--crimson); }
-  .card-glow-blue { border-top-color: var(--navy); }
+  .card-rule-primary { @apply border-t-4 border-t-navy; }
+  .card-rule-success { @apply border-t-4 border-t-gov-green; }
+  .card-rule-warning { @apply border-t-4 border-t-gov-gold; }
+  .card-rule-error   { @apply border-t-4 border-t-gov-red; }
+  .card-rule-gray    { @apply border-t-4 border-t-gov-gray-30; }
 
-  /* ── Badges ──────────────────────────────────────────────── */
-  .badge-red, .badge-gold, .badge-blue, .badge-green, .badge-purple {
-    @apply text-[10px] font-medium px-2 py-0.5 tracking-widest uppercase border;
-    font-family: 'DM Mono', monospace;
+  /* ── Buttons ──────────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center gap-1.5 font-sans font-bold rounded-sm
+           border border-transparent cursor-pointer
+           transition-colors duration-[120ms] ease-in-out;
   }
-  .badge-red    { @apply bg-crimson/10   text-crimson     border-crimson/35;   }
-  .badge-gold   { @apply bg-gold/10      text-gold        border-gold/35;      }
-  .badge-blue   { @apply bg-navy/10      text-navy        border-navy/35;      }
-  .badge-green  { @apply bg-green-800/10 text-green-800   border-green-700/30; }
-  .badge-purple { @apply bg-purple-900/10 text-purple-900 border-purple-700/30; }
+  .btn-md { @apply text-base px-5 py-2.5 leading-none; }
+  .btn-sm { @apply text-sm  px-3 py-1.5 leading-none; }
+  .btn-lg { @apply text-lg  px-7 py-3.5 leading-none; }
 
-  /* ── Buttons ─────────────────────────────────────────────── */
-  .btn-primary {
-    @apply bg-crimson text-white font-bold px-5 py-2.5 text-xs tracking-[0.2em] uppercase
-           hover:bg-[#a81e2e] transition-colors duration-150;
-    font-family: 'DM Mono', monospace;
+  .btn-primary   { @apply bg-navy text-white hover:bg-navy-dark active:bg-navy-darker; }
+  .btn-secondary { @apply bg-gov-red text-white hover:bg-gov-red-dark; }
+  .btn-outline   { @apply bg-transparent text-navy ring-2 ring-inset ring-navy hover:ring-navy-dark hover:text-navy-dark; }
+  .btn-ghost     { @apply bg-transparent text-navy hover:bg-navy-lighter hover:text-navy-dark; }
+  .btn-ink       { @apply bg-navy-darker text-white hover:bg-navy-darkest; }
+  .btn-disabled  { @apply bg-gov-gray-20 text-gov-gray-60 cursor-not-allowed; }
+
+  /* ── Status tags ──────────────────────────────────────────────── */
+  .tag {
+    @apply inline-flex items-center gap-1 font-sans font-bold rounded-sm
+           text-[11px] tracking-[0.04em] uppercase px-2 py-0.5 whitespace-nowrap;
   }
-  .btn-ghost {
-    @apply border border-ink text-ink font-medium px-5 py-2.5 text-xs uppercase tracking-[0.2em]
-           hover:bg-ink hover:text-paper transition-colors duration-150;
-    font-family: 'DM Mono', monospace;
+  .tag-info    { @apply bg-navy text-white; }
+  .tag-success { @apply bg-gov-green text-white; }
+  .tag-warn    { @apply bg-gov-gold text-gov-gray-90; }
+  .tag-error   { @apply bg-gov-red text-white; }
+  .tag-ink     { @apply bg-navy-darker text-white; }
+  .tag-subtle  { @apply bg-gov-gray-cool2 text-gov-gray-70 border border-gov-gray-10; }
+
+  /* ── Alerts ───────────────────────────────────────────────────── */
+  .alert        { @apply flex gap-3 items-start p-3 border-l-[6px] border-gov-info bg-gov-info-light; }
+  .alert-success{ @apply flex gap-3 items-start p-3 border-l-[6px] border-gov-green bg-gov-green-light; }
+  .alert-warning{ @apply flex gap-3 items-start p-3 border-l-[6px] border-gov-gold  bg-gov-gold-light; }
+  .alert-error  { @apply flex gap-3 items-start p-3 border-l-[6px] border-gov-red   bg-gov-red-lighter; }
+
+  /* ── Data table ───────────────────────────────────────────────── */
+  .data-table { @apply w-full border-collapse text-sm; }
+  .data-table thead tr { @apply bg-navy-darker text-white; }
+  .data-table th {
+    @apply px-4 py-2.5 text-left text-[12px] font-bold tracking-[0.04em] uppercase;
+  }
+  .data-table tbody tr { @apply border-b border-gov-gray-10; }
+  .data-table tbody tr:nth-child(even) { @apply bg-gov-gray-cool1; }
+  .data-table td { @apply px-4 py-3 text-gov-gray-90 align-top; }
+  .data-table td.meta { @apply text-gov-gray-60; }
+  .data-table tbody tr.row-link { @apply cursor-pointer hover:bg-navy-lighter; }
+
+  /* ── Progress bar ─────────────────────────────────────────────── */
+  .pbar-track { @apply w-full bg-gov-gray-10 overflow-hidden rounded-none; }
+  .pbar-fill  { @apply transition-[width] duration-500 ease-out; }
+
+  /* ── Nav ──────────────────────────────────────────────────────── */
+  .nav-item {
+    @apply flex items-center gap-2.5 px-4 py-2.5 text-[15px] text-gov-gray-70
+           border-l-4 border-transparent no-underline
+           hover:bg-gov-gray-cool1 hover:text-gov-gray-90 transition-colors duration-100;
+  }
+  .nav-item-active {
+    @apply bg-navy-lighter text-navy-darker font-bold border-l-4 border-navy;
   }
 
-  /* ── Section label ───────────────────────────────────────── */
-  .section-label {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 1rem;
+  /* ── Utility ──────────────────────────────────────────────────── */
+  .eyebrow {
+    @apply font-sans text-[13px] font-bold tracking-[0.05em] uppercase text-navy;
   }
-  .section-label::before {
-    content: '';
-    display: block;
-    height: 2px;
-    width: 14px;
-    background: var(--crimson);
-    flex-shrink: 0;
-  }
-  .section-label-text {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--ink);
+  .page-section-title {
+    @apply font-serif text-[22px] font-bold text-gov-gray-90 leading-snug;
   }
 }
 
-/* ── Scrollbar ───────────────────────────────────────────────── */
-::-webkit-scrollbar        { width: 4px; }
-::-webkit-scrollbar-track  { background: var(--paper-dark); }
-::-webkit-scrollbar-thumb  { background: var(--rule); }
-::-webkit-scrollbar-thumb:hover { background: var(--crimson); }
-
-/* ── Page load animations ────────────────────────────────────── */
-@keyframes reveal {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.anim { animation: reveal 0.55s ease-out forwards; opacity: 0; }
-.anim-1 { animation-delay: 0.05s; }
-.anim-2 { animation-delay: 0.15s; }
-.anim-3 { animation-delay: 0.25s; }
-.anim-4 { animation-delay: 0.35s; }
-.anim-5 { animation-delay: 0.45s; }
-.anim-6 { animation-delay: 0.55s; }
-
-/* ── Tabular numerals ────────────────────────────────────────── */
-.digit {
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-}
+/* ── Slim scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar       { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: #f7f9fa; }
+::-webkit-scrollbar-thumb { background: #c9c9c9; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #a9aeb1; }

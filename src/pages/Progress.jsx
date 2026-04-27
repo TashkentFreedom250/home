@@ -1,84 +1,86 @@
-import { getProgress, getContracts, getTimeline } from '../api'
+// src/pages/Progress.jsx
+import { getProgress, getContracts } from '../api'
 import ProgressBar from '../components/ProgressBar'
+import StatusTag from '../components/StatusTag'
 
-const statusCfg = {
-  ahead:      { label: 'Ahead',    badge: 'badge-blue',  bar: 'blue'  },
-  'on-track': { label: 'On Track', badge: 'badge-green', bar: 'gold'  },
-  'at-risk':  { label: 'At Risk',  badge: 'badge-red',   bar: 'red'   },
+const WS_STATUS = {
+  ahead:      { kind: 'info',    label: 'Ahead',    bar: 'primary' },
+  'on-track': { kind: 'success', label: 'On track', bar: 'success' },
+  'at-risk':  { kind: 'error',   label: 'At risk',  bar: 'error'   },
 }
-const contractBadge = {
-  'awarded':     { cls: 'badge-green', label: 'Settled'     },
-  'in-progress': { cls: 'badge-gold',  label: 'In Progress' },
-  'not-started': { cls: 'badge-red',   label: 'Not Started' },
-}
-const contractAccent = {
-  'awarded':     'border-t-green-700',
-  'in-progress': 'border-t-gold',
-  'not-started': 'border-t-crimson',
-}
-const taskIcon = { completed: '✓', 'in-progress': '●', 'not-started': '○' }
-const fmtDate  = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 
-function SectionLabel({ children }) {
-  return (
-    <div className="section-label mb-4">
-      <span className="section-label-text">{children}</span>
-    </div>
-  )
+const CONTRACT_STATUS = {
+  'awarded':     { kind: 'success', label: 'Awarded'     },
+  'in-progress': { kind: 'warn',    label: 'In progress' },
+  'not-started': { kind: 'error',   label: 'Not started' },
 }
+
+const fmtShort = (d) => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
 export default function Progress() {
   const { overall, initiatives, milestones } = getProgress()
   const contracts = getContracts()
-  const timeline  = getTimeline()
 
   return (
-    <div className="min-h-full p-8 max-w-6xl mx-auto">
+    <div className="px-10 py-8 max-w-[1240px]">
 
-      {/* Header */}
-      <div className="anim anim-1 mb-8 border-b-4 border-ink pb-5">
-        <div className="font-mono text-[9px] tracking-[0.5em] text-ink-muted uppercase mb-1">Tracker</div>
-        <h1 className="font-display text-[56px] leading-none text-ink tracking-tight">PROGRESS</h1>
-        <p className="mt-1 font-mono text-[11px] text-ink-muted tracking-wider">Mission readiness across all workstreams</p>
-        <div className="mt-3 h-[2px] bg-crimson" />
+      {/* Page header */}
+      <div className="mb-8">
+        <p className="eyebrow mb-2">Tracker</p>
+        <h1>Progress</h1>
+        <p className="text-gov-gray-70 mt-2">
+          56-day countdown — mission readiness across all workstreams.
+        </p>
       </div>
 
       {/* Overall readiness */}
-      <div className="anim anim-2 card card-glow-gold mb-6">
+      <div className="card card-rule-primary p-6 mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <div className="font-mono text-[9px] tracking-[0.35em] text-ink-muted uppercase mb-1">Overall Readiness</div>
-            <div className="font-serif text-base font-semibold text-ink">Across {initiatives.length} workstreams</div>
+            <div className="text-[12px] font-bold tracking-[0.04em] uppercase text-gov-gray-60 mb-1">
+              Overall mission readiness
+            </div>
+            <div className="text-sm text-gov-gray-60">Across {initiatives.length} workstreams</div>
           </div>
-          <span className="font-display text-6xl text-gold leading-none tracking-tight">{overall}%</span>
+          <div className="text-[40px] font-bold tabular-nums text-navy leading-none">{overall}%</div>
         </div>
-        <ProgressBar value={overall} color="gold" height="lg" />
+        <ProgressBar value={overall} color="primary" height="lg"/>
       </div>
 
-      {/* Contracts */}
-      <section className="anim anim-3 mb-8">
-        <SectionLabel>Contracts</SectionLabel>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {/* Procurement contracts */}
+      <section className="mb-8">
+        <h2 className="mb-4">Procurement / contracts</h2>
+        <div className="grid grid-cols-2 gap-4">
           {contracts.map(c => {
-            const badge  = contractBadge[c.status]
-            const accent = contractAccent[c.status]
+            const s = CONTRACT_STATUS[c.status]
             return (
-              <div key={c.id} className={`card border-t-[3px] ${accent}`}>
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <span className="font-serif text-sm font-semibold text-ink">{c.name}</span>
-                  <span className={badge.cls}>{badge.label}</span>
+              <div key={c.id} className="card p-0 overflow-hidden">
+                <div className="flex items-center justify-between px-5 py-3 border-b border-gov-gray-10 bg-gov-gray-cool1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg leading-none">{c.icon}</span>
+                    <span className="font-bold text-gov-gray-90">{c.name}</span>
+                  </div>
+                  <StatusTag kind={s.kind}>{s.label}</StatusTag>
                 </div>
-                <p className="mb-2 font-mono text-[10px] text-ink-muted leading-relaxed">{c.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs font-medium text-gold">{c.cost}</span>
-                  {c.awardDate && (
-                    <span className="font-mono text-[10px] text-green-700">
-                      Settled {new Date(c.awardDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    </span>
-                  )}
-                </div>
-                <div className="mt-2 border border-paper-mid bg-paper-dark px-3 py-2 font-mono text-[10px] text-gold">
-                  {c.nextStep}
+                <div className="px-5 py-4">
+                  <p className="text-sm text-gov-gray-70 leading-snug mb-4">{c.description}</p>
+                  <dl className="text-sm">
+                    {c.awardDate && (
+                      <div className="flex justify-between py-2 border-t border-gov-gray-10">
+                        <dt className="text-gov-gray-60">Awarded</dt>
+                        <dd className="font-semibold text-gov-green">{fmtShort(c.awardDate)}</dd>
+                      </div>
+                    )}
+                    {c.targetAward && (
+                      <div className="flex justify-between py-2 border-t border-gov-gray-10">
+                        <dt className="text-gov-gray-60">Target award</dt>
+                        <dd className="font-semibold text-gov-gold-dark">{fmtShort(c.targetAward)}</dd>
+                      </div>
+                    )}
+                  </dl>
+                  <div className="mt-3 px-3 py-2.5 bg-gov-gray-cool1 border-l-4 border-navy text-[13px] text-gov-gray-70">
+                    <strong className="text-gov-gray-90">Next: </strong>{c.nextStep}
+                  </div>
                 </div>
               </div>
             )
@@ -86,83 +88,68 @@ export default function Progress() {
         </div>
       </section>
 
-      {/* Workstreams */}
-      <section className="anim anim-4 mb-8">
-        <SectionLabel>Workstreams</SectionLabel>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {initiatives.map(init => {
-            const cfg = statusCfg[init.status]
-            return (
-              <div key={init.id} className="card hover:border-paper-mid transition-colors">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  <div className="min-w-0">
-                    <div className="truncate font-serif text-sm font-medium text-ink">{init.name}</div>
-                    <div className="mt-0.5 font-mono text-[10px] text-ink-muted">{init.owner} · {init.deadline}</div>
-                  </div>
-                  <span className={`flex-shrink-0 ${cfg.badge}`}>{cfg.label}</span>
-                </div>
-                <ProgressBar value={init.progress} color={cfg.bar} />
-                <p className="mt-1.5 font-mono text-[10px] text-ink-muted">{init.note}</p>
-              </div>
-            )
-          })}
-        </div>
-      </section>
-
-      {/* 8-Week Timeline */}
-      <section className="anim anim-5 mb-8">
-        <SectionLabel>8-Week Countdown</SectionLabel>
-        <div className="space-y-2">
-          {timeline.map(week => (
-            <div key={week.week} className={`card ${week.phase === 'current' ? 'card-glow-red ring-1 ring-crimson/20' : 'card-glow-blue'}`}>
-              <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  {week.phase === 'current' && <span className="badge-red">This Week</span>}
-                  <h3 className="font-serif text-sm font-semibold text-ink">Week {week.week} — {week.label}</h3>
-                </div>
-                <span className="font-mono text-[10px] text-ink-muted">{week.dates}</span>
-              </div>
-              <div className="space-y-1.5">
-                {week.tasks.map((t, i) => (
-                  <div key={i} className={`flex items-start gap-2 font-mono text-[11px] ${
-                    t.status === 'completed' ? 'text-ink-muted/50 line-through' : t.critical ? 'text-ink' : 'text-ink-muted'
-                  }`}>
-                    <span className="mt-px flex-shrink-0">{taskIcon[t.status]}</span>
-                    <span className={t.critical && t.status !== 'completed' ? 'font-medium' : ''}>
-                      {t.task}
-                      {t.critical && t.status !== 'completed' && (
-                        <span className="ml-2 text-crimson tracking-wider">CRITICAL</span>
-                      )}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+      {/* Workstreams table */}
+      <section className="mb-8">
+        <h2 className="mb-4">Workstreams</h2>
+        <div className="card p-0 overflow-hidden">
+          <table className="data-table">
+            <thead>
+              <tr>
+                <th>Workstream</th>
+                <th style={{width:160}}>Owner</th>
+                <th style={{width:100}}>Due</th>
+                <th style={{width:110}}>Status</th>
+                <th style={{width:220}}>Progress</th>
+                <th style={{width:56, textAlign:'right'}}>%</th>
+              </tr>
+            </thead>
+            <tbody>
+              {initiatives.map(init => {
+                const s = WS_STATUS[init.status]
+                return (
+                  <tr key={init.id}>
+                    <td>
+                      <div className="font-semibold text-gov-gray-90">{init.name}</div>
+                      <div className="text-[13px] text-gov-gray-60 mt-0.5">{init.note}</div>
+                    </td>
+                    <td className="meta">{init.owner}</td>
+                    <td className="font-mono font-semibold">{init.deadline}</td>
+                    <td><StatusTag kind={s.kind}>{s.label}</StatusTag></td>
+                    <td><ProgressBar value={init.progress} color={s.bar} height="md"/></td>
+                    <td className="text-right font-bold tabular-nums">{init.progress}%</td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
         </div>
       </section>
 
       {/* Milestones */}
-      <section className="anim anim-6">
-        <SectionLabel>Key Milestones</SectionLabel>
-        <div className="card">
+      <section>
+        <h2 className="mb-4">Key milestones</h2>
+        <div className="card p-6">
           <div className="relative">
-            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-paper-mid" />
-            <div className="space-y-4">
+            <div className="absolute left-[7px] top-2 bottom-2 w-px bg-gov-gray-10"/>
+            <div className="flex flex-col gap-5">
               {milestones.map(m => (
-                <div key={m.id} className="relative flex items-start gap-5 pl-7">
-                  <div className={`absolute left-0 top-1.5 h-3 w-3 border-2 ${
-                    m.status === 'completed' ? 'border-green-700 bg-green-700' : 'border-crimson bg-paper'
-                  }`} />
-                  <div className="min-w-0 flex-1">
-                    <div className={`font-serif text-sm font-medium ${m.status === 'completed' ? 'text-ink-muted line-through' : 'text-ink'}`}>
-                      {m.name}
+                <div key={m.id} className="relative flex items-start gap-5 pl-8">
+                  <div className={`absolute left-0 top-1 w-3.5 h-3.5 rounded-full border-2 ${
+                    m.status === 'completed'
+                      ? 'border-gov-green bg-gov-green'
+                      : 'border-navy bg-white'
+                  }`}/>
+                  <div className="flex-1 min-w-0">
+                    <div className={`text-sm font-medium ${
+                      m.status === 'completed' ? 'text-gov-gray-60 line-through' : 'text-gov-gray-90'
+                    }`}>{m.name}</div>
+                    <div className="text-[13px] text-gov-gray-60 mt-0.5">
+                      {new Date(m.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                     </div>
-                    <div className="mt-0.5 font-mono text-[10px] text-ink-muted/70">{fmtDate(m.date)}</div>
                   </div>
-                  <span className={`flex-shrink-0 ${m.status === 'completed' ? 'badge-green' : 'badge-gold'}`}>
-                    {m.status === 'completed' ? 'Done' : 'Upcoming'}
-                  </span>
+                  <StatusTag kind={m.status === 'completed' ? 'success' : 'subtle'}>
+                    {m.status === 'completed' ? '✓ Done' : 'Upcoming'}
+                  </StatusTag>
                 </div>
               ))}
             </div>
