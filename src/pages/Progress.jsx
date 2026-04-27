@@ -1,155 +1,183 @@
-// src/pages/Progress.jsx
-import { getProgress, getContracts } from '../api'
+import { getContracts, getProgress, getTimeline } from '../api'
 import ProgressBar from '../components/ProgressBar'
 import StatusTag from '../components/StatusTag'
 
 const WS_CFG = {
-  ahead:      { kind: 'info',    label: 'Ahead',    bar: 'blue'  },
-  'on-track': { kind: 'success', label: 'On Track', bar: 'green' },
-  'at-risk':  { kind: 'error',   label: 'At Risk',  bar: 'red'   },
+  ahead: { kind: 'info', label: 'Ahead', bar: 'blue', accent: 'accent-cyan' },
+  'on-track': { kind: 'success', label: 'On Track', bar: 'green', accent: 'accent-mint' },
+  'at-risk': { kind: 'error', label: 'At Risk', bar: 'red', accent: 'accent-coral' },
 }
+
 const CONTRACT_CFG = {
-  'awarded':     { kind: 'success', label: 'Awarded'     },
-  'in-progress': { kind: 'warn',    label: 'In Progress' },
-  'not-started': { kind: 'error',   label: 'Not Started' },
+  awarded: { kind: 'success', label: 'Awarded', accent: 'accent-mint' },
+  'in-progress': { kind: 'warn', label: 'In Progress', accent: 'accent-amber' },
+  'not-started': { kind: 'error', label: 'Not Started', accent: 'accent-coral' },
 }
-const fmtShort = d => d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : null
+
+const fmtShort = date => date
+  ? new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  : null
 
 export default function Progress() {
   const { overall, initiatives, milestones } = getProgress()
   const contracts = getContracts()
+  const timeline = getTimeline()
+  const riskCount = initiatives.filter(item => item.status === 'at-risk').length
+  const doneMilestones = milestones.filter(item => item.status === 'completed').length
 
   return (
-    <div style={{ padding: '32px 40px 48px', maxWidth: 1280 }}>
+    <div className="page-shell">
+      <section className="section-head enter d0" style={{ marginBottom: 24 }}>
+        <div>
+          <div className="page-kicker"><span className="eyebrow">Readiness tracker</span></div>
+          <h1 className="hero-title" style={{ fontSize: 'clamp(42px, 6vw, 72px)', maxWidth: '12ch', marginBottom: 16 }}>
+            Progress that feels alive.
+          </h1>
+          <p className="hero-lede" style={{ maxWidth: 780 }}>
+            The event plan is split into workstreams, weeks, contracts, and milestones so each dependency has a visible owner and next move.
+          </p>
+        </div>
+        <StatusTag kind={riskCount ? 'error' : 'success'}>{riskCount} At Risk</StatusTag>
+      </section>
 
-      {/* Header */}
-      <div className="enter d0" style={{ marginBottom: 32 }}>
-        <div className="eyebrow" style={{ marginBottom: 6 }}>Tracker</div>
-        <h1 className="page-title">Progress</h1>
-        <p className="page-sub">56-day countdown — mission readiness across all workstreams.</p>
-      </div>
-
-      {/* Overall readiness */}
-      <div className="card accent-blue enter d1" style={{ padding: '22px 28px', marginBottom: 28 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
+      <section className="panel readiness-panel accent-border accent-flood accent-cyan enter d1" style={{ '--pct': overall }}>
+        <div className="readiness-ring">
           <div>
-            <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--fg4)' }}>
-              Overall Mission Readiness
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--fg4)', marginTop: 4 }}>Across {initiatives.length} workstreams</div>
-          </div>
-          <div style={{ fontFamily: "'Merriweather',serif", fontSize: 48, fontWeight: 900, color: 'var(--blue-soft)', lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>
-            {overall}%
+            <strong>{overall}%</strong>
+            <span>Mission ready</span>
           </div>
         </div>
-        <ProgressBar value={overall} color="blue" height="xl"/>
-      </div>
+        <div>
+          <div className="section-head" style={{ marginBottom: 16 }}>
+            <div>
+              <h2 className="panel-title">Overall readiness</h2>
+              <p className="panel-sub">Across {initiatives.length} active workstreams and {milestones.length} major milestones.</p>
+            </div>
+            <StatusTag kind="success">{doneMilestones} Milestones Done</StatusTag>
+          </div>
+          <ProgressBar value={overall} color="blue" height="xl" />
+          <div className="bento-grid" style={{ marginTop: 16 }}>
+            {[
+              ['Contracts', `${contracts.filter(item => item.status === 'awarded').length}/${contracts.length}`, 'Awarded'],
+              ['Workstreams', `${initiatives.length - riskCount}/${initiatives.length}`, 'Healthy'],
+              ['Milestones', `${doneMilestones}/${milestones.length}`, 'Complete'],
+            ].map(([label, value, sub], index) => (
+              <div className="inspector-card" key={label} style={{ gridColumn: 'span 4', margin: 0 }}>
+                <strong>{value} {sub}</strong>
+                <span>{label}</span>
+                <div style={{ marginTop: 10 }}>
+                  <ProgressBar value={[40, 70, 33][index]} color={['gold', 'green', 'blue'][index]} height="sm" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-      {/* Contracts */}
-      <section style={{ marginBottom: 28 }}>
-        <h2 className="section-title enter d2" style={{ marginBottom: 14 }}>Procurement / Contracts</h2>
-        <div className="enter d3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-          {contracts.map(c => {
-            const cfg = CONTRACT_CFG[c.status]
+      <section style={{ marginBottom: 32 }}>
+        <div className="section-head enter d2">
+          <div>
+            <h2 className="section-title">Workstreams</h2>
+            <p className="page-sub">A compact command board for the people and deadlines behind each lane.</p>
+          </div>
+        </div>
+        <div className="workstream-grid enter d3">
+          {initiatives.map(item => {
+            const cfg = WS_CFG[item.status]
             return (
-              <div key={c.id} className="card" style={{ padding: 0, overflow: 'hidden' }}>
-                <div style={{
-                  display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  padding: '12px 18px', borderBottom: '1px solid rgba(255,255,255,0.06)',
-                  background: 'rgba(0,0,0,0.2)',
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: 18, lineHeight: 1 }}>{c.icon}</span>
-                    <span style={{ fontWeight: 600, color: 'var(--fg1)' }}>{c.name}</span>
+              <article className={`panel workstream-card lift accent-border accent-flood ${cfg.accent}`} key={item.id}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12 }}>
+                  <div>
+                    <h3>{item.name}</h3>
+                    <p className="panel-sub">{item.note}</p>
                   </div>
                   <StatusTag kind={cfg.kind}>{cfg.label}</StatusTag>
                 </div>
-                <div style={{ padding: '14px 18px' }}>
-                  <p style={{ fontSize: 12, color: 'var(--fg4)', lineHeight: 1.55, marginBottom: 12 }}>{c.description}</p>
-                  {c.awardDate   && <div style={{ fontSize: 12, color: 'var(--fg4)', marginBottom: 6 }}>Awarded: <span style={{ color: 'var(--green-soft)', fontWeight: 600 }}>{fmtShort(c.awardDate)}</span></div>}
-                  {c.targetAward && <div style={{ fontSize: 12, color: 'var(--fg4)', marginBottom: 6 }}>Target award: <span style={{ color: 'var(--gold-soft)', fontWeight: 600 }}>{fmtShort(c.targetAward)}</span></div>}
-                  <div style={{
-                    marginTop: 10, padding: '8px 12px', borderRadius: 6,
-                    background: 'var(--blue-dim)', border: '1px solid rgba(36,145,255,0.18)',
-                    fontSize: 12, color: 'var(--blue-soft)',
-                  }}>
-                    Next: {c.nextStep}
-                  </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', margin: '18px 0 8px', color: 'var(--quiet)', fontSize: 12 }}>
+                  <span>{item.owner}</span>
+                  <span className="mono">{item.deadline}</span>
                 </div>
-              </div>
+                <ProgressBar value={item.progress} color={cfg.bar} height="md" />
+                <div className="mono" style={{ marginTop: 8, color: 'var(--muted)', fontWeight: 800 }}>{item.progress}% complete</div>
+              </article>
             )
           })}
         </div>
       </section>
 
-      {/* Workstreams table */}
-      <section className="enter d4" style={{ marginBottom: 28 }}>
-        <h2 className="section-title" style={{ marginBottom: 14 }}>Workstreams</h2>
-        <div className="table-wrap">
-          <table className="dtable">
-            <thead>
-              <tr>
-                <th>Workstream</th>
-                <th style={{ width: 150 }}>Owner</th>
-                <th style={{ width: 90 }}>Due</th>
-                <th style={{ width: 110 }}>Status</th>
-                <th style={{ width: 210 }}>Progress</th>
-                <th style={{ width: 52, textAlign: 'right' }}>%</th>
-              </tr>
-            </thead>
-            <tbody>
-              {initiatives.map(init => {
-                const cfg = WS_CFG[init.status]
-                return (
-                  <tr key={init.id}>
-                    <td>
-                      <div style={{ fontWeight: 600, color: 'var(--fg1)' }}>{init.name}</div>
-                      <div style={{ fontSize: 11, color: 'var(--fg4)', marginTop: 2 }}>{init.note}</div>
-                    </td>
-                    <td className="muted">{init.owner}</td>
-                    <td style={{ fontFamily: "'Source Code Pro',monospace", fontWeight: 600, color: 'var(--fg2)', fontVariantNumeric: 'tabular-nums' }}>{init.deadline}</td>
-                    <td><StatusTag kind={cfg.kind}>{cfg.label}</StatusTag></td>
-                    <td style={{ verticalAlign: 'middle' }}><ProgressBar value={init.progress} color={cfg.bar} height="md"/></td>
-                    <td style={{ textAlign: 'right', fontWeight: 700, color: 'var(--fg1)', fontVariantNumeric: 'tabular-nums' }}>{init.progress}%</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+      <section style={{ marginBottom: 32 }}>
+        <div className="section-head enter d4">
+          <div>
+            <h2 className="section-title">Contract room</h2>
+            <p className="page-sub">Procurement status as production cards, with target dates and current blockers.</p>
+          </div>
+        </div>
+        <div className="bento-grid enter d5">
+          {contracts.map(contract => {
+            const cfg = CONTRACT_CFG[contract.status]
+            return (
+              <article className={`panel contract-card accent-border accent-flood ${cfg.accent}`} key={contract.id}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 12 }}>
+                  <div>
+                    <div className="stat-label">{contract.cost}</div>
+                    <h3 style={{ color: '#fff', fontSize: 20, fontWeight: 780, margin: '8px 0 6px' }}>{contract.name}</h3>
+                  </div>
+                  <StatusTag kind={cfg.kind}>{cfg.label}</StatusTag>
+                </div>
+                <p className="panel-sub">{contract.description}</p>
+                <div style={{ display: 'grid', gap: 8, marginTop: 14 }}>
+                  {contract.awardDate ? <span className="tag tag-success">Awarded {fmtShort(contract.awardDate)}</span> : null}
+                  {contract.targetAward ? <span className="tag tag-warn">Target {fmtShort(contract.targetAward)}</span> : null}
+                  <div className="inspector-card" style={{ margin: 0 }}>
+                    <strong>Next</strong>
+                    <span>{contract.nextStep}</span>
+                  </div>
+                </div>
+              </article>
+            )
+          })}
         </div>
       </section>
 
-      {/* Milestones */}
-      <section className="enter d5">
-        <h2 className="section-title" style={{ marginBottom: 14 }}>Key Milestones</h2>
-        <div className="card" style={{ padding: 24 }}>
-          <div style={{ position: 'relative' }}>
-            <div style={{ position: 'absolute', left: 7, top: 4, bottom: 4, width: 1, background: 'rgba(255,255,255,0.07)' }}/>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-              {milestones.map(m => (
-                <div key={m.id} style={{ position: 'relative', display: 'flex', alignItems: 'flex-start', gap: 20, paddingLeft: 28 }}>
-                  <div style={{
-                    position: 'absolute', left: 0, top: 3,
-                    width: 14, height: 14, borderRadius: '50%',
-                    border: `2px solid ${m.status === 'completed' ? 'var(--green)' : 'rgba(36,145,255,0.4)'}`,
-                    background: m.status === 'completed' ? 'var(--green)' : 'var(--bg)',
-                  }}/>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 500, color: m.status === 'completed' ? 'var(--fg4)' : 'var(--fg1)', textDecoration: m.status === 'completed' ? 'line-through' : 'none' }}>
-                      {m.name}
-                    </div>
-                    <div style={{ fontSize: 12, color: 'var(--fg4)', marginTop: 2 }}>
-                      {new Date(m.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                    </div>
-                  </div>
-                  <StatusTag kind={m.status === 'completed' ? 'success' : 'subtle'}>
-                    {m.status === 'completed' ? '✓ Done' : 'Upcoming'}
-                  </StatusTag>
-                </div>
-              ))}
+      <section className="program-layout enter d6">
+        <div>
+          <div className="section-head" style={{ marginBottom: 14 }}>
+            <div>
+              <h2 className="section-title">Milestones</h2>
+              <p className="page-sub">The critical path from signed contracts to technical rehearsal.</p>
             </div>
           </div>
+          <div className="timeline-grid">
+            {milestones.map(milestone => (
+              <article
+                className={`panel milestone-card accent-border accent-flood ${milestone.status === 'completed' ? 'accent-mint' : 'accent-blue'}`}
+                key={milestone.id}
+              >
+                <StatusTag kind={milestone.status === 'completed' ? 'success' : 'subtle'}>
+                  {milestone.status === 'completed' ? 'Done' : 'Upcoming'}
+                </StatusTag>
+                <h3 style={{ margin: '14px 0 10px', color: '#fff', fontSize: 14, lineHeight: 1.35 }}>{milestone.name}</h3>
+                <p className="panel-sub">{new Date(milestone.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</p>
+              </article>
+            ))}
+          </div>
         </div>
+
+        <aside className="panel accent-border accent-flood accent-amber" style={{ padding: 18 }}>
+          <div className="stat-label">Eight-week sprint</div>
+          <div className="schedule-stack" style={{ marginTop: 14 }}>
+            {timeline.slice(0, 5).map(week => (
+              <div className="schedule-row" key={week.week} style={{ gridTemplateColumns: '54px minmax(0, 1fr) auto' }}>
+                <span className="mono" style={{ color: 'var(--amber)', fontWeight: 850 }}>W{week.week}</span>
+                <div>
+                  <strong style={{ display: 'block', color: '#fff', fontSize: 13 }}>{week.label}</strong>
+                  <span style={{ color: 'var(--quiet)', fontSize: 12 }}>{week.dates}</span>
+                </div>
+                <StatusTag kind={week.phase === 'current' ? 'warn' : 'subtle'}>{week.phase}</StatusTag>
+              </div>
+            ))}
+          </div>
+        </aside>
       </section>
     </div>
   )

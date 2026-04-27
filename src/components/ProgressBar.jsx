@@ -2,10 +2,10 @@
 // Flat rectangular bar. color: 'blue' | 'green' | 'red' | 'gold' | 'white'
 
 const COLOR_MAP = {
-  blue:  'var(--blue)',
-  green: 'var(--green-soft)',
-  red:   'var(--red-soft)',
-  gold:  'var(--gold)',
+  blue:  'linear-gradient(90deg, var(--blue), var(--cyan))',
+  green: 'linear-gradient(90deg, var(--mint), var(--cyan))',
+  red:   'linear-gradient(90deg, var(--coral), var(--rose))',
+  gold:  'linear-gradient(90deg, var(--amber), var(--coral))',
   white: 'rgba(255,255,255,0.4)',
 }
 
