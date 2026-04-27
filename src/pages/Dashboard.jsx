@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   getActions,
@@ -6,254 +6,242 @@ import {
   getCountdown,
   getEventDetails,
   getProgress,
-  getProgramRundown,
   getStats,
+  getTimeline,
   getUpcomingEvents,
 } from '../api'
-import ProgressBar from '../components/ProgressBar'
 import StatusTag from '../components/StatusTag'
 
-const CONTRACT_CFG = {
-  awarded: { kind: 'success', label: 'Awarded', accent: 'accent-mint' },
-  'in-progress': { kind: 'warn', label: 'In Progress', accent: 'accent-amber' },
-  'not-started': { kind: 'error', label: 'Not Started', accent: 'accent-coral' },
+const WS_CFG = {
+  ahead: { dot: 'var(--mint)', label: 'Ahead' },
+  'on-track': { dot: 'var(--cyan)', label: 'On Track' },
+  'at-risk': { dot: 'var(--coral)', label: 'At Risk' },
 }
-
-const FEATURES = [
-  'Run of show',
-  'Vendor tracking',
-  'Protocol',
-  'Security',
-  'Comms',
-  'Budget',
-  'Documents',
-  'Guest flow',
-]
 
 const fmtDate = d => new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
-function HeroCountdown() {
-  const [time, setTime] = useState(getCountdown)
+function useCountUp(target, duration = 1200) {
+  const [value, setValue] = useState(0)
+  const startRef = useRef(null)
+  const targetRef = useRef(target)
 
   useEffect(() => {
-    const id = setInterval(() => setTime(getCountdown()), 1000)
-    return () => clearInterval(id)
-  }, [])
+    targetRef.current = target
+    startRef.current = null
+    let raf = 0
+    const tick = ts => {
+      if (!startRef.current) startRef.current = ts
+      const elapsed = ts - startRef.current
+      const t = Math.min(1, elapsed / duration)
+      const eased = 1 - Math.pow(1 - t, 3)
+      setValue(Math.round(eased * targetRef.current))
+      if (t < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, duration])
 
+  return value
+}
+
+function FlipDigit({ value }) {
+  const str = String(value).padStart(2, '0')
   return (
-    <div className="hero-countdown" aria-label="Countdown to event">
+    <span className="flip-digit" key={str}>
+      <span className="flip-inner">{str}</span>
+    </span>
+  )
+}
+
+function HeroCountdown({ time }) {
+  return (
+    <div className="brief-clock" aria-label="Countdown to event">
       {[
         ['Days', time.days],
         ['Hours', time.hours],
         ['Minutes', time.minutes],
         ['Seconds', time.seconds],
-      ].map(([label, value]) => (
-        <div className="count-tile" key={label}>
-          <span className="count-value">{String(value).padStart(2, '0')}</span>
-          <span className="count-label">{label}</span>
+      ].map(([label, value], index) => (
+        <div className="clock-cell" key={label}>
+          <FlipDigit value={value} />
+          <span className="clock-label">{label}</span>
+          {index < 3 ? <span className="clock-sep" aria-hidden="true">:</span> : null}
         </div>
       ))}
     </div>
   )
 }
 
-function FeatureMarquee() {
-  const pills = FEATURES.map((feature, index) => (
-    <span className="feature-pill" key={`${feature}-${index}`}>
-      <span className="feature-dot" />
-      {feature}
-    </span>
-  ))
+function LocalClock() {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  const time = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Tashkent',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(now)
 
   return (
-    <div className="feature-marquee" aria-hidden="true">
-      <div className="feature-track">{pills}</div>
-      <div className="feature-track">{pills}</div>
+    <div className="local-clock">
+      <span className="clock-label">Tashkent · UTC+5</span>
+      <span className="clock-time mono">{time}</span>
     </div>
   )
 }
 
-function buildWorkspaceTabs({ program, contracts, events, actions }) {
-  const urgent = actions.filter(action => action.priority === 'high')
-  const nextEvents = events.slice(0, 4)
-
-  return [
-    {
-      label: 'Program',
-      title: 'Run of show is live',
-      description: 'Program blocks, ceremony beats, and show flow stay visible while the team works.',
-      lanes: [
-        {
-          title: 'Ceremony',
-          cards: program.blocks.filter(block => block.category === 'ceremony').slice(0, 3).map(block => ({
-            title: block.item,
-            meta: `${block.time} · ${block.duration}`,
-          })),
-        },
-        {
-          title: 'Stage',
-          cards: program.blocks.filter(block => block.category === 'entertainment').slice(0, 3).map(block => ({
-            title: block.item,
-            meta: `${block.time} · ${block.duration}`,
-          })),
-        },
-        {
-          title: 'Ops',
-          cards: program.blocks.filter(block => block.category === 'logistics').slice(0, 3).map(block => ({
-            title: block.item,
-            meta: `${block.time} · ${block.duration}`,
-          })),
-        },
-      ],
-    },
-    {
-      label: 'Contracts',
-      title: 'Procurement without mystery',
-      description: 'Every vendor sits in one board with owner context, status, and the next move.',
-      lanes: [
-        {
-          title: 'Signed',
-          cards: contracts.filter(item => item.status === 'awarded').map(item => ({
-            title: item.name,
-            meta: item.nextStep,
-          })),
-        },
-        {
-          title: 'Active',
-          cards: contracts.filter(item => item.status === 'in-progress').map(item => ({
-            title: item.name,
-            meta: item.nextStep,
-          })),
-        },
-        {
-          title: 'Attention',
-          cards: urgent.slice(0, 3).map(item => ({
-            title: item.title,
-            meta: `Due ${item.deadline}`,
-          })),
-        },
-      ],
-    },
-    {
-      label: 'Calendar',
-      title: 'The next critical dates',
-      description: 'Meetings, sign-offs, and rehearsals are connected to the same event system.',
-      lanes: [
-        {
-          title: 'Week',
-          cards: nextEvents.slice(0, 2).map(item => ({
-            title: item.name,
-            meta: `${fmtDate(item.date)} · ${item.location}`,
-          })),
-        },
-        {
-          title: 'Prod',
-          cards: nextEvents.slice(2, 4).map(item => ({
-            title: item.name,
-            meta: `${fmtDate(item.date)} · ${item.attendees} attendees`,
-          })),
-        },
-        {
-          title: 'Showtime',
-          cards: events.slice(-2).map(item => ({
-            title: item.name,
-            meta: `${fmtDate(item.date)} · ${item.location}`,
-          })),
-        },
-      ],
-    },
-  ]
-}
-
-function MissionWorkspace({ tabs, activeTab, onTabChange, readiness, event }) {
-  const tab = tabs[activeTab]
+function ReadinessRing({ value, size = 200 }) {
+  const animated = useCountUp(value, 1600)
+  const stroke = 12
+  const radius = (size - stroke) / 2
+  const circumference = 2 * Math.PI * radius
+  const offset = circumference - (animated / 100) * circumference
 
   return (
-    <div className="visual-stage enter d1">
-      <div className="desktop-window">
-        <div className="window-bar">
-          <div className="traffic"><span /><span /><span /></div>
-          <div className="window-title">
-            <span className="live-dot" />
-            Freedom 250 Workspace
-          </div>
+    <div className="ring-wrap" style={{ width: size, height: size }}>
+      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+        <defs>
+          <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stopColor="var(--cyan)" />
+            <stop offset="60%" stopColor="var(--blue)" />
+            <stop offset="100%" stopColor="var(--violet)" />
+          </linearGradient>
+          <filter id="ringGlow">
+            <feGaussianBlur stdDeviation="2.6" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth={stroke}
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="url(#ringGrad)"
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          filter="url(#ringGlow)"
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      </svg>
+      <div className="ring-label">
+        <strong className="mono">{animated}<span className="ring-pct">%</span></strong>
+        <span>Mission ready</span>
+      </div>
+    </div>
+  )
+}
+
+function ProcurementBar({ contracts }) {
+  const totalUnits = contracts.reduce((sum, c) => {
+    const n = parseInt(c.cost, 10)
+    return sum + (Number.isFinite(n) ? n : 0)
+  }, 0)
+  const segments = contracts.map(c => {
+    const n = parseInt(c.cost, 10)
+    const units = Number.isFinite(n) ? n : 0
+    return {
+      ...c,
+      units,
+      pct: totalUnits ? (units / totalUnits) * 100 : 100 / contracts.length,
+    }
+  })
+  const colorFor = status =>
+    status === 'awarded' ? 'var(--mint)' :
+    status === 'in-progress' ? 'var(--amber)' : 'var(--coral)'
+  const awardedUnits = segments
+    .filter(s => s.status === 'awarded')
+    .reduce((sum, s) => sum + s.units, 0)
+  const awardedAnim = useCountUp(awardedUnits, 1400)
+  const inMotionAnim = useCountUp(totalUnits - awardedUnits, 1400)
+
+  return (
+    <div className="budget-block">
+      <div className="budget-meta">
+        <div className="budget-summary">
+          <span className="mono budget-num" style={{ color: 'var(--mint)' }}>{awardedAnim}</span>
+          <span className="budget-divider">awarded</span>
+          <span className="mono budget-num" style={{ color: 'var(--amber)' }}>{inMotionAnim}</span>
+          <span className="budget-divider">in motion · of {totalUnits} units</span>
         </div>
-
-        <div className="window-body">
-          <aside className="window-rail">
-            <div className="rail-search" />
-            {['Mission Control', 'Program', 'Vendors', 'Protocol', 'Security', 'Inbox'].map((item, index) => (
-              <div key={item} className={`rail-item${index === 0 ? ' active' : ''}`}>
-                <span className="rail-glyph" style={{ background: ['var(--cyan)', 'var(--amber)', 'var(--mint)', 'var(--coral)', 'var(--violet)', 'var(--blue)'][index] }} />
-                {item}
-              </div>
-            ))}
-          </aside>
-
-          <section className="window-main">
-            <div className="mock-tabs">
-              {tabs.map((item, index) => (
-                <button
-                  className={`mock-tab${activeTab === index ? ' active' : ''}`}
-                  key={item.label}
-                  type="button"
-                  onClick={() => onTabChange(index)}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="mock-heading">
-              <div>
-                <h2>{tab.title}</h2>
-                <p>{tab.description}</p>
-              </div>
-              <StatusTag kind="info">{readiness}% Ready</StatusTag>
-            </div>
-
-            <div className="mock-board">
-              {tab.lanes.map(lane => (
-                <div className="mock-lane" key={lane.title}>
-                  <div className="mock-lane-title">
-                    <span>{lane.title}</span>
-                    <span>{lane.cards.length}</span>
-                  </div>
-                  {lane.cards.map((card, index) => (
-                    <div className="mock-card" key={`${card.title}-${index}`}>
-                      <strong>{card.title}</strong>
-                      <small>{card.meta}</small>
-                      <div className="avatars" aria-hidden="true">
-                        <span className="avatar">AV</span>
-                        <span className="avatar">PR</span>
-                        <span className="avatar">RS</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <aside className="window-inspector">
-            <div className="inspector-card">
-              <strong>{event.name}</strong>
-              <span>{event.location}</span>
-            </div>
-            <div className="inspector-card">
-              <strong>Guest flow</strong>
-              <span>{event.attendance} guests across VIP, press, and general arrival lanes.</span>
-            </div>
-            <div className="inspector-card">
-              <strong>Readiness curve</strong>
-              <span>Critical path is strongest on AV, power, and artist booking.</span>
-              <div style={{ marginTop: 10 }}>
-                <ProgressBar value={readiness} color="blue" height="sm" />
-              </div>
-            </div>
-          </aside>
+        <div className="budget-legend">
+          <span><i style={{ background: 'var(--mint)' }} /> Awarded</span>
+          <span><i style={{ background: 'var(--amber)' }} /> In Progress</span>
         </div>
       </div>
+
+      <div className="budget-bar" role="img" aria-label="Procurement allocation">
+        {segments.map((seg, i) => (
+          <div
+            className="budget-seg"
+            key={seg.id}
+            style={{
+              width: `${seg.pct}%`,
+              background: colorFor(seg.status),
+              animationDelay: `${300 + i * 90}ms`,
+            }}
+            title={`${seg.name} · ${seg.cost}`}
+          >
+            <span className="budget-seg-name">{seg.name}</span>
+            <span className="budget-seg-units mono">{seg.cost}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function MissionRibbon({ timeline }) {
+  return (
+    <div className="ribbon-wrap" role="list">
+      {timeline.map((week, i) => {
+        const total = week.tasks.length
+        const done = week.tasks.filter(t => t.status === 'completed').length
+        const pct = total ? (done / total) * 100 : 0
+        const isCurrent = week.phase === 'current'
+
+        return (
+          <article
+            className={`ribbon-tile${isCurrent ? ' is-current' : ''}`}
+            key={week.week}
+            role="listitem"
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
+            {isCurrent ? <span className="ribbon-aurora" aria-hidden="true" /> : null}
+            <header className="ribbon-head">
+              <span className="ribbon-week mono">W{week.week}</span>
+              {isCurrent ? <span className="ribbon-live"><span className="live-dot" /> Now</span> : null}
+            </header>
+            <h4 className="ribbon-label">{week.label}</h4>
+            <p className="ribbon-dates">{week.dates}</p>
+
+            <div className="ribbon-track" aria-hidden="true">
+              <div className="ribbon-fill" style={{ width: `${pct}%` }} />
+            </div>
+
+            <div className="ribbon-stats">
+              <span className="mono">{done}/{total}</span>
+              <span>tasks done</span>
+            </div>
+          </article>
+        )
+      })}
     </div>
   )
 }
@@ -265,155 +253,174 @@ export default function Dashboard() {
   const actions = getActions()
   const events = getUpcomingEvents()
   const progress = getProgress()
-  const program = getProgramRundown()
-  const urgentCount = actions.filter(action => action.priority === 'high').length
-  const [activeTab, setActiveTab] = useState(0)
+  const timeline = getTimeline()
 
-  const workspaceTabs = useMemo(
-    () => buildWorkspaceTabs({ program, contracts, events, actions }),
-    [program, contracts, events, actions],
+  const [time, setTime] = useState(getCountdown)
+  useEffect(() => {
+    const id = setInterval(() => setTime(getCountdown()), 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  const urgent = useMemo(
+    () => actions.filter(a => a.priority === 'high').slice(0, 3),
+    [actions],
   )
-
-  const statCards = [
-    { label: 'Expected Guests', value: stats.attendance.value, sub: 'Arrival flow, VIP zones, press lane', accent: 'accent-cyan' },
-    { label: 'Contracts', value: stats.contracts.value, sub: stats.contracts.change, accent: 'accent-mint' },
-    { label: 'Days Left', value: stats.daysLeft.value, sub: 'June 10, 2026 at Uzexpocentre', accent: 'accent-amber' },
-    { label: 'Urgent Actions', value: String(urgentCount), sub: 'Decision queue for leadership', accent: 'accent-coral' },
-  ]
+  const topInitiatives = useMemo(
+    () => [...progress.initiatives].sort((a, b) => {
+      const order = { 'at-risk': 0, 'on-track': 1, 'ahead': 2 }
+      return order[a.status] - order[b.status] || a.progress - b.progress
+    }).slice(0, 4),
+    [progress.initiatives],
+  )
+  const nextEvents = events.slice(0, 3)
+  const atRisk = progress.initiatives.filter(i => i.status === 'at-risk').length
 
   return (
     <div className="page-shell">
-      <section className="hero-grid">
-        <div className="hero-copy enter d0">
-          <div className="page-kicker">
-            <span className="eyebrow"><span className="live-dot" /> Everything app for event teams</span>
-          </div>
-          <h1 className="hero-title">One beautiful place to run <span>Freedom 250.</span></h1>
-          <p className="hero-lede">
-            A dark, fast, Huly-inspired mission workspace for program flow, contracts,
-            vendors, security, documents, and the decisions that keep show week calm.
-          </p>
-          <div className="hero-actions">
-            <Link className="btn btn-primary btn-md" to="/action">Open action queue</Link>
-            <Link className="btn btn-ghost btn-md" to="/progress">View readiness</Link>
-          </div>
-          <HeroCountdown />
+      <section className="brief-hero enter d0">
+        <div className="brief-meta-row">
+          <span className="eyebrow">
+            <span className="live-dot" />
+            Mission Brief · T-{stats.daysLeft.value} days
+          </span>
+          <LocalClock />
         </div>
 
-        <MissionWorkspace
-          tabs={workspaceTabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-          readiness={progress.overall}
-          event={event}
-        />
+        <h1 className="brief-title">
+          Freedom <span className="brief-title-num">250</span>
+        </h1>
+        <p className="brief-tagline">
+          {event.location} · June 10, 2026 · {event.attendance} guests
+        </p>
+
+        <div className="brief-stage">
+          <HeroCountdown time={time} />
+        </div>
+
+        <div className="brief-actions">
+          <Link className="btn btn-primary btn-md" to="/action">
+            Open action queue
+            <span className="btn-badge">{urgent.length}</span>
+          </Link>
+          <Link className="btn btn-ghost btn-md" to="/progress">View readiness</Link>
+        </div>
+
+        <span className="aurora aurora-a" aria-hidden="true" />
+        <span className="aurora aurora-b" aria-hidden="true" />
       </section>
 
-      <FeatureMarquee />
-
-      <section style={{ marginTop: 12, marginBottom: 34 }}>
-        <div className="section-head enter d2">
-          <div>
-            <h2 className="section-title">Mission dashboard</h2>
-            <p className="page-sub">{event.host} · {event.city} · {event.location}</p>
-          </div>
-          <StatusTag kind="info">{progress.overall}% overall readiness</StatusTag>
-        </div>
-
-        <div className="bento-grid enter d3">
-          {statCards.map(card => (
-            <div className={`panel stat-card accent-border accent-flood ${card.accent}`} key={card.label}>
-              <div className="stat-label">{card.label}</div>
-              <div className="stat-value">{card.value}</div>
-              <div className="stat-sub">{card.sub}</div>
+      <section className="command-grid">
+        <article className="panel command-card accent-border accent-flood accent-cyan ring-card enter d1">
+          <header className="command-head">
+            <div>
+              <div className="stat-label">Mission readiness</div>
+              <h2 className="command-title">Top streams</h2>
             </div>
-          ))}
-        </div>
+            <StatusTag kind={atRisk ? 'error' : 'success'}>
+              {atRisk ? `${atRisk} at risk` : 'On path'}
+            </StatusTag>
+          </header>
+
+          <div className="ring-layout">
+            <ReadinessRing value={progress.overall} />
+
+            <ul className="ws-spark">
+              {topInitiatives.map((item, i) => {
+                const cfg = WS_CFG[item.status]
+                return (
+                  <li className="ws-row" key={item.id} style={{ animationDelay: `${300 + i * 90}ms` }}>
+                    <span className="ws-dot" style={{ background: cfg.dot }} />
+                    <strong className="ws-name">{item.name}</strong>
+                    <div className="ws-bar">
+                      <div
+                        className="ws-bar-fill"
+                        style={{
+                          width: `${item.progress}%`,
+                          background: `linear-gradient(90deg, ${cfg.dot}, var(--cyan))`,
+                        }}
+                      />
+                    </div>
+                    <span className="mono ws-pct">{item.progress}%</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        </article>
+
+        <article className="panel command-card accent-border accent-flood accent-coral enter d2">
+          <header className="command-head">
+            <div>
+              <div className="stat-label">Decision queue</div>
+              <h2 className="command-title">Critical for chair</h2>
+            </div>
+            <Link to="/action" className="link-btn">All →</Link>
+          </header>
+
+          <ol className="action-rank">
+            {urgent.map((action, i) => (
+              <li key={action.id} style={{ animationDelay: `${260 + i * 80}ms` }}>
+                <span className="action-num">{String(i + 1).padStart(2, '0')}</span>
+                <div className="action-body">
+                  <strong>{action.title}</strong>
+                  <span className="action-meta mono">Due {action.deadline}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </article>
+
+        <article className="panel command-card accent-border accent-flood accent-violet enter d3">
+          <header className="command-head">
+            <div>
+              <div className="stat-label">What's next</div>
+              <h2 className="command-title">Upcoming</h2>
+            </div>
+            <span className="mono command-meta">{nextEvents.length}</span>
+          </header>
+
+          <ul className="event-list">
+            {nextEvents.map((item, i) => {
+              const date = new Date(item.date)
+              return (
+                <li className="event-row" key={item.id} style={{ animationDelay: `${260 + i * 80}ms` }}>
+                  <div className="event-date">
+                    <span className="event-day mono">{date.getDate()}</span>
+                    <span className="event-month">{date.toLocaleDateString('en-US', { month: 'short' }).toUpperCase()}</span>
+                  </div>
+                  <div className="event-info">
+                    <strong>{item.name}</strong>
+                    <span>{item.location}</span>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        </article>
       </section>
 
-      <section style={{ marginBottom: 34 }}>
-        <div className="section-head enter d4">
+      <section className="enter d4" style={{ marginTop: 26 }}>
+        <div className="section-head">
           <div>
             <h2 className="section-title">Procurement pulse</h2>
-            <p className="page-sub">Contracts are grouped by risk, next step, and operational dependency.</p>
+            <p className="page-sub">Budget split across vendors, scaled by units.</p>
           </div>
-          <Link to="/progress" className="link-btn">Full tracker</Link>
+          <Link to="/progress" className="link-btn">Tracker →</Link>
         </div>
-
-        <div className="bento-grid enter d5">
-          {contracts.map(contract => {
-            const cfg = CONTRACT_CFG[contract.status]
-            return (
-              <article
-                className={`panel contract-card lift accent-border accent-flood ${cfg.accent}`}
-                key={contract.id}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 14, alignItems: 'flex-start' }}>
-                  <div>
-                    <div className="stat-label">{contract.cost}</div>
-                    <h3 style={{ margin: '8px 0 6px', color: '#fff', fontSize: 20, fontWeight: 780 }}>{contract.name}</h3>
-                  </div>
-                  <StatusTag kind={cfg.kind}>{cfg.label}</StatusTag>
-                </div>
-                <p style={{ color: 'var(--quiet)', margin: '8px 0 18px', lineHeight: 1.55 }}>{contract.description}</p>
-                <div className="inspector-card" style={{ margin: 0 }}>
-                  <strong>Next</strong>
-                  <span>{contract.nextStep}</span>
-                </div>
-              </article>
-            )
-          })}
+        <div className="panel accent-border accent-flood accent-amber" style={{ padding: 22, marginTop: 14 }}>
+          <ProcurementBar contracts={contracts} />
         </div>
       </section>
 
-      <section className="program-layout enter d6">
-        <div>
-          <div className="section-head" style={{ marginBottom: 14 }}>
-            <div>
-              <h2 className="section-title">Upcoming key dates</h2>
-              <p className="page-sub">The nearest sign-offs and rehearsals on the critical path.</p>
-            </div>
-            <Link to="/action" className="link-btn">Command center</Link>
+      <section className="enter d5" style={{ marginTop: 26 }}>
+        <div className="section-head">
+          <div>
+            <h2 className="section-title">8-week mission ribbon</h2>
+            <p className="page-sub">From contract awards to showtime.</p>
           </div>
-          <div className="table-wrap">
-            <table className="dtable">
-              <thead>
-                <tr>
-                  <th style={{ width: 92 }}>Date</th>
-                  <th>Event</th>
-                  <th style={{ width: 150 }}>Location</th>
-                  <th style={{ width: 110 }}>Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {events.slice(0, 5).map(item => (
-                  <tr key={item.id} className="row-hover">
-                    <td className="strong mono" style={{ color: 'var(--cyan)' }}>{fmtDate(item.date)}</td>
-                    <td className="strong">{item.name}</td>
-                    <td className="muted">{item.location}</td>
-                    <td><StatusTag kind={item.type === 'Internal' ? 'subtle' : 'info'}>{item.type}</StatusTag></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <span className="mono command-meta" style={{ color: 'var(--cyan)' }}>T-{stats.daysLeft.value}</span>
         </div>
-
-        <aside className="panel accent-border accent-flood accent-violet" style={{ padding: 18 }}>
-          <div className="stat-label">Fast lanes</div>
-          <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
-            {[
-              { to: '/progress', label: 'Readiness timeline', sub: 'Workstreams, milestones, contracts' },
-              { to: '/resources', label: 'Knowledge hub', sub: 'Channels, briefs, vendor files' },
-              { to: '/action', label: 'Leadership queue', sub: 'Urgent decisions and program draft' },
-            ].map(item => (
-              <Link className="inspector-card lift" key={item.to} to={item.to} style={{ margin: 0 }}>
-                <strong>{item.label}</strong>
-                <span>{item.sub}</span>
-              </Link>
-            ))}
-          </div>
-        </aside>
+        <MissionRibbon timeline={timeline} />
       </section>
     </div>
   )
