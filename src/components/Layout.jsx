@@ -4,21 +4,6 @@
 
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
 
-// ── Inline flag SVG ────────────────────────────────────────────────────────
-function Flag() {
-  return (
-    <svg width="16" height="11" viewBox="0 0 16 11" aria-hidden="true" className="flex-shrink-0">
-      <rect width="16" height="11" fill="#bf0a30"/>
-      <rect y="1" width="16" height="1" fill="#fff"/>
-      <rect y="3" width="16" height="1" fill="#fff"/>
-      <rect y="5" width="16" height="1" fill="#fff"/>
-      <rect y="7" width="16" height="1" fill="#fff"/>
-      <rect y="9" width="16" height="1" fill="#fff"/>
-      <rect width="7" height="6" fill="#002868"/>
-    </svg>
-  )
-}
-
 // ── Nav icons ──────────────────────────────────────────────────────────────
 function IconDashboard() {
   return (
@@ -77,14 +62,7 @@ export default function Layout() {
   return (
     <div className="flex flex-col h-full overflow-hidden">
 
-      {/* ── Tier 1: Gov banner ────────────────────────────────────── */}
-      <div className="bg-gov-gray-cool1 border-b border-gov-gray-10 px-6 py-1.5 flex items-center gap-2.5 text-[12px] text-gov-gray-70">
-        <Flag/>
-        <span>An official internal portal of the U.S. Embassy in Tashkent · Event Operations</span>
-        <span className="ml-auto text-gov-gray-60">Internal use only · Secure .gov</span>
-      </div>
-
-      {/* ── Tier 2: Navy masthead ─────────────────────────────────── */}
+      {/* ── Masthead ──────────────────────────────────────────────── */}
       <header className="bg-navy-darker border-b-[6px] border-gov-red px-6 py-4 flex items-center gap-4">
         {/* Seal */}
         <div className="w-12 h-12 bg-navy-darkest border-t-4 border-b-4 border-gov-red flex items-center justify-content-center shrink-0">
