@@ -4,13 +4,6 @@ import { getCountdown, getEventDetails, getStats } from '../api'
 import { freedomIconGold, freedomLogoGold, freedomLogoWhite } from '../assets/freedom250'
 import Sponsors from '../components/Sponsors'
 
-const MOMENTS = [
-  ['Music', 'Live stage'],
-  ['Food', 'American favorites'],
-  ['Fireworks', 'Night finale'],
-  ['Community', '2,000+ guests'],
-]
-
 function useLiveCountdown() {
   const [time, setTime] = useState(getCountdown)
 
@@ -77,16 +70,6 @@ export default function Dashboard() {
       </section>
 
       <Sponsors />
-
-      <section className="moment-grid enter d3" aria-label="Event highlights">
-        {MOMENTS.map(([title, sub], index) => (
-          <article className="moment-card" key={title} style={{ '--moment-alpha': String(0.32 + index * 0.08) }}>
-            <span className="moment-num mono">{String(index + 1).padStart(2, '0')}</span>
-            <h2>{title}</h2>
-            <p>{sub}</p>
-          </article>
-        ))}
-      </section>
     </div>
   )
 }
