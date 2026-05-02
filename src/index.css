@@ -1737,17 +1737,22 @@
     position: relative;
     overflow: hidden;
     width: min(100%, 1680px);
+    height: calc(100vh - 66px);
+    min-height: 600px;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
   }
 
   .event-hero {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.48fr);
-    gap: clamp(24px, 5vw, 76px);
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 0.45fr);
+    gap: clamp(20px, 4vw, 60px);
     align-items: center;
-    min-height: calc(100vh - 66px);
-    padding: clamp(32px, 6vw, 86px) clamp(18px, 5vw, 84px);
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: clamp(20px, 3vw, 46px) clamp(18px, 5vw, 84px);
     overflow: hidden;
   }
 
@@ -1816,13 +1821,13 @@
   }
 
   .event-logo-title {
-    margin: clamp(22px, 4vw, 44px) 0 12px;
+    margin: clamp(14px, 2vw, 24px) 0 10px;
   }
 
   .event-logo-title img {
     display: block;
-    width: min(100%, 760px);
-    max-height: 54vh;
+    width: min(100%, 580px);
+    max-height: 32vh;
     object-fit: contain;
     object-position: left center;
     filter: drop-shadow(0 34px 90px rgba(0, 0, 0, 0.42));
@@ -1838,16 +1843,16 @@
 
   .event-countdown {
     display: grid;
-    grid-template-columns: repeat(4, minmax(78px, 1fr));
-    gap: 9px;
-    width: min(560px, 100%);
-    margin-top: clamp(24px, 4vw, 38px);
+    grid-template-columns: repeat(4, minmax(68px, 1fr));
+    gap: 8px;
+    width: min(500px, 100%);
+    margin-top: clamp(14px, 2vw, 22px);
   }
 
   .event-count {
     position: relative;
-    min-height: 92px;
-    padding: 14px 12px;
+    min-height: 72px;
+    padding: 10px 10px;
     border: 1px solid rgba(255, 255, 255, 0.11);
     border-radius: 8px;
     background:
@@ -1868,16 +1873,16 @@
   .event-count strong {
     display: block;
     color: #fff;
-    font-size: clamp(30px, 4vw, 48px);
+    font-size: clamp(24px, 3vw, 36px);
     font-weight: 750;
     line-height: 1;
   }
 
   .event-count span {
     display: block;
-    margin-top: 10px;
+    margin-top: 6px;
     color: rgba(247, 248, 255, 0.48);
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 850;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -1887,7 +1892,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-top: 24px;
+    margin-top: 16px;
   }
 
   .event-seal {
@@ -1895,13 +1900,13 @@
     z-index: 1;
     display: grid;
     place-items: center;
-    min-height: 430px;
+    min-height: 280px;
     isolation: isolate;
   }
 
   .event-seal img {
-    width: min(100%, 440px);
-    max-height: 480px;
+    width: min(100%, 320px);
+    max-height: 320px;
     object-fit: contain;
     filter: drop-shadow(0 30px 90px rgba(211, 155, 60, 0.22));
     animation: sealFloat 7s ease-in-out infinite;
@@ -1909,7 +1914,7 @@
 
   .event-seal-ring {
     position: absolute;
-    width: min(76vw, 430px);
+    width: min(60vw, 310px);
     aspect-ratio: 1;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
@@ -1960,10 +1965,11 @@
 
   .sponsors {
     position: relative;
-    padding: clamp(46px, 7vw, 96px) clamp(18px, 5vw, 84px) clamp(34px, 5vw, 70px);
+    flex: 0 0 auto;
+    padding: 14px clamp(18px, 5vw, 84px) 12px;
     border-block: 1px solid rgba(255, 255, 255, 0.06);
     background:
-      radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.05), transparent 60%),
+      radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.04), transparent 60%),
       linear-gradient(180deg, rgba(255, 255, 255, 0.018), rgba(255, 255, 255, 0.005));
     overflow: hidden;
   }
@@ -1982,32 +1988,31 @@
   }
 
   .sponsors-head {
-    display: grid;
-    justify-items: center;
-    text-align: center;
-    gap: 12px;
-    margin: 0 auto clamp(28px, 4vw, 48px);
-    max-width: 720px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 8px;
   }
 
   .sponsors-eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px 14px 6px 8px;
+    gap: 8px;
+    padding: 4px 12px 4px 6px;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.04);
     color: rgba(247, 248, 255, 0.78);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 850;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
   }
 
   .sponsors-eyebrow img {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     object-fit: contain;
     filter: drop-shadow(0 4px 14px rgba(211, 155, 60, 0.4));
   }
@@ -2016,10 +2021,10 @@
     margin: 0;
     color: #fff;
     font-family: "Merriweather", "Inter", serif;
-    font-size: clamp(28px, 3.4vw, 44px);
-    font-weight: 900;
-    line-height: 1.08;
-    letter-spacing: -0.01em;
+    font-size: clamp(13px, 1.1vw, 15px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: 0;
   }
 
   .sponsors-title em {
@@ -2031,11 +2036,7 @@
   }
 
   .sponsors-sub {
-    margin: 0;
-    max-width: 540px;
-    color: rgba(247, 248, 255, 0.56);
-    font-size: 14px;
-    line-height: 1.55;
+    display: none;
   }
 
   .sponsor-rail {
@@ -2072,9 +2073,9 @@
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 240px;
-    height: 96px;
-    padding: 14px 22px;
+    width: 180px;
+    height: 64px;
+    padding: 10px 16px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 14px;
     background:
@@ -2118,9 +2119,9 @@
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 200px;
+    max-width: 150px;
     height: auto;
-    max-height: 64px;
+    max-height: 44px;
     filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.34));
   }
 
@@ -2139,13 +2140,14 @@
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1px;
-    padding: clamp(30px, 5vw, 74px) clamp(18px, 5vw, 84px) clamp(46px, 7vw, 94px);
+    flex: 0 0 auto;
+    padding: 12px clamp(18px, 5vw, 84px) 14px;
   }
 
   .moment-card {
     position: relative;
-    min-height: 220px;
-    padding: 22px;
+    min-height: 92px;
+    padding: 12px 14px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     background:
       linear-gradient(150deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.012)),
@@ -2170,21 +2172,21 @@
 
   .moment-card h2 {
     position: relative;
-    margin: 78px 0 8px;
+    margin: 8px 0 4px;
     color: #fff;
     font-family: "Merriweather", serif;
-    font-size: clamp(26px, 3vw, 42px);
+    font-size: clamp(16px, 1.6vw, 22px);
     font-weight: 900;
-    line-height: 0.95;
+    line-height: 1;
   }
 
   .moment-card p {
     position: relative;
     margin: 0;
     color: rgba(247, 248, 255, 0.48);
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 750;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
   }
 
@@ -3151,17 +3153,24 @@
 }
 
 @media (max-width: 1180px) {
+  .event-home {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
   .event-hero {
     grid-template-columns: 1fr;
     min-height: auto;
+    flex: 0 0 auto;
   }
 
   .event-seal {
-    min-height: 280px;
+    min-height: 240px;
   }
 
   .event-seal img {
-    width: min(72vw, 360px);
+    width: min(60vw, 280px);
   }
 
   .moment-grid {
