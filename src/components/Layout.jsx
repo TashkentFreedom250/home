@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Outlet, NavLink } from 'react-router-dom'
 import { getCountdown } from '../api'
+import { freedomLogoWide } from '../assets/freedom250'
 import Stars from './Stars'
 
 function IconDashboard() {
@@ -43,10 +44,10 @@ function IconAction() {
 }
 
 const NAV = [
-  { path: '/', label: 'Dashboard', Icon: IconDashboard, end: true },
+  { path: '/', label: 'Home', Icon: IconDashboard, end: true },
   { path: '/progress', label: 'Progress', Icon: IconProgress },
   { path: '/resources', label: 'Resources', Icon: IconResources },
-  { path: '/action', label: 'Action', Icon: IconAction, badge: 4 },
+  { path: '/action', label: 'Plan', Icon: IconAction },
 ]
 
 export default function Layout() {
@@ -73,11 +74,11 @@ export default function Layout() {
       <Stars />
 
       <header className="topbar">
-        <NavLink to="/" end className="brand" aria-label="Freedom 250 Dashboard">
-          <span className="brand-mark">250</span>
+        <NavLink to="/" end className="brand brand-event" aria-label="Freedom 250 home">
+          <img className="brand-logo-img" src={freedomLogoWide} alt="" aria-hidden="true" />
           <span>
             <span className="brand-title">Freedom 250</span>
-            <span className="brand-sub">Embassy event operating system</span>
+            <span className="brand-sub">June 10 | Tashkent</span>
           </span>
         </NavLink>
 
@@ -98,7 +99,7 @@ export default function Layout() {
 
         <div className="topbar-meta">
           <span className="metric-pill mono">{countdown.days}d {String(countdown.hours).padStart(2, '0')}h</span>
-          <span className="live-pill"><span className="live-dot" /> Mission active</span>
+          <span className="live-pill"><span className="live-dot" /> Showtime</span>
         </div>
       </header>
 

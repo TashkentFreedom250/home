@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getCountdown } from '../api'
+import { freedomLogoGold } from '../assets/freedom250'
 import Stars from './Stars'
 
 const TOKEN = 'VGFzaGtlbnQyNTAhISE='
@@ -40,10 +41,10 @@ export default function LoginGate({ children }) {
       <Stars />
       <div className="login-shell">
         <section className="login-preview panel accent-border accent-flood accent-cyan enter d0">
-          <span className="eyebrow"><span className="live-dot" /> Private workspace</span>
-          <h1 className="login-title">Freedom 250 Mission Control</h1>
-          <p className="hero-lede" style={{ maxWidth: 620 }}>
-            Program, vendors, security, protocol, and show-week decisions in one polished operating room.
+          <span className="eyebrow"><span className="live-dot" /> Freedom 250</span>
+          <img className="login-hero-logo" src={freedomLogoGold} alt="Freedom 250" />
+          <p className="hero-lede" style={{ maxWidth: 560 }}>
+            June 10, 2026 | Uzexpocentre, Tashkent
           </p>
 
           <div className="hero-countdown" style={{ maxWidth: 560 }}>
@@ -62,9 +63,9 @@ export default function LoginGate({ children }) {
 
           <div className="mock-board" style={{ marginTop: 30 }}>
             {[
-              ['Contracts', '2 awarded, 3 moving'],
-              ['Program', '17 blocks drafted'],
-              ['Action', '4 blockers live'],
+              ['Music', 'Live stage'],
+              ['Food', 'Sponsor court'],
+              ['Finale', 'Fireworks'],
             ].map(([title, meta]) => (
               <div className="mock-lane" key={title}>
                 <div className="mock-lane-title">{title}</div>
@@ -85,14 +86,14 @@ export default function LoginGate({ children }) {
             <span className="brand-mark">250</span>
             <span>
               <span className="brand-title">Freedom 250</span>
-              <span className="brand-sub">Authorized personnel</span>
+              <span className="brand-sub">Event workspace</span>
             </span>
           </div>
 
           <h2 style={{ margin: '28px 0 8px', color: '#fff', fontSize: 28, fontWeight: 820, lineHeight: 1.08 }}>
-            Enter the workspace
+            Unlock the build
           </h2>
-          <p className="panel-sub">Mission planning is protected until showtime.</p>
+          <p className="panel-sub">One password. No clutter.</p>
 
           <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 12, marginTop: 24 }}>
             <input

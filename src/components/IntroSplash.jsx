@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { freedomLogoWide } from '../assets/freedom250'
 
 const STAR_COUNT = 13
 const SPARK_COUNT = 12
@@ -62,6 +63,7 @@ export default function IntroSplash() {
         ))}
       </div>
       <div className="intro-sweep" />
+      <img className="intro-official-mark" src={freedomLogoWide} alt="" />
       <div className="intro-emblem" role="img" aria-label="Freedom 250 loading">
         <div className="intro-ring">
           {stars.map(index => (
