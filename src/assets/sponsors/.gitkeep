@@ -1,0 +1,5 @@
+# Drop licensed sponsor logo files here.
+# Filename must match the sponsor key in src/components/Sponsors.jsx
+# (e.g. coca-cola.png, pepsi.svg, papa-johns.png, dominos.png, wendys.png, burger-king.png).
+# Supported: .png .jpg .jpeg .svg .webp
+# When present, the file is used automatically and replaces the stylized placeholder.
