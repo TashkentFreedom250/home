@@ -2,15 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getCountdown, getEventDetails, getStats } from '../api'
 import { freedomIconGold, freedomLogoGold, freedomLogoWhite } from '../assets/freedom250'
-
-const SPONSORS = [
-  { name: 'Coca-Cola', key: 'coke' },
-  { name: 'Pepsi', key: 'pepsi' },
-  { name: 'Papa Johns', key: 'papa' },
-  { name: "Domino's", key: 'dominos' },
-  { name: "Wendy's", key: 'wendys' },
-  { name: 'Burger King', key: 'burger' },
-]
+import Sponsors from '../components/Sponsors'
 
 const MOMENTS = [
   ['Music', 'Live stage'],
@@ -45,25 +37,6 @@ function CountdownPills({ time }) {
         </div>
       ))}
     </div>
-  )
-}
-
-function SponsorMarquee() {
-  const row = [...SPONSORS, ...SPONSORS]
-
-  return (
-    <section className="sponsor-marquee enter d2" aria-label="Freedom 250 sponsors">
-      <div className="sponsor-label">Official sponsors</div>
-      <div className="sponsor-window">
-        <div className="sponsor-track">
-          {row.map((sponsor, index) => (
-            <span className={`sponsor-card sponsor-${sponsor.key}`} key={`${sponsor.key}-${index}`}>
-              {sponsor.name}
-            </span>
-          ))}
-        </div>
-      </div>
-    </section>
   )
 }
 
@@ -103,7 +76,7 @@ export default function Dashboard() {
         </aside>
       </section>
 
-      <SponsorMarquee />
+      <Sponsors />
 
       <section className="moment-grid enter d3" aria-label="Event highlights">
         {MOMENTS.map(([title, sub], index) => (
