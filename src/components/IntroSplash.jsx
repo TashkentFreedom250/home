@@ -19,13 +19,13 @@ const fireworks = [
   { x: '50%', y: '42%', color: '#ffffff', delay: 720 },
 ]
 const stageLights = [
-  { x: '11%', color: '#d52b3f', angle: '-28deg', alt: '-12deg', delay: '0ms' },
-  { x: '24%', color: '#ffffff', angle: '-17deg', alt: '7deg', delay: '120ms' },
-  { x: '37%', color: '#3d7dff', angle: '-8deg', alt: '18deg', delay: '260ms' },
+  { x: '10%', color: '#d52b3f', angle: '24deg', alt: '12deg', delay: '0ms' },
+  { x: '23%', color: '#ffffff', angle: '16deg', alt: '3deg', delay: '120ms' },
+  { x: '36%', color: '#3d7dff', angle: '8deg', alt: '-7deg', delay: '260ms' },
   { x: '50%', color: '#f6d57a', angle: '0deg', alt: '0deg', delay: '80ms' },
-  { x: '63%', color: '#3d7dff', angle: '8deg', alt: '-18deg', delay: '260ms' },
-  { x: '76%', color: '#ffffff', angle: '17deg', alt: '-7deg', delay: '120ms' },
-  { x: '89%', color: '#d52b3f', angle: '28deg', alt: '12deg', delay: '0ms' },
+  { x: '64%', color: '#3d7dff', angle: '-8deg', alt: '7deg', delay: '260ms' },
+  { x: '77%', color: '#ffffff', angle: '-16deg', alt: '-3deg', delay: '120ms' },
+  { x: '90%', color: '#d52b3f', angle: '-24deg', alt: '-12deg', delay: '0ms' },
 ]
 
 export default function IntroSplash() {

@@ -152,6 +152,7 @@
     place-items: center;
     overflow: hidden;
     background:
+      radial-gradient(ellipse at 50% 8%, rgba(255, 255, 255, 0.1), transparent 24rem),
       radial-gradient(ellipse at 50% 96%, rgba(246, 213, 122, 0.12), transparent 34rem),
       linear-gradient(180deg, rgba(2, 3, 20, 0.98), rgba(3, 6, 24, 1)),
       #020314;
@@ -230,7 +231,8 @@
   .intro-haze {
     inset: -12%;
     background:
-      radial-gradient(ellipse at 50% 82%, rgba(255, 255, 255, 0.16), transparent 44%),
+      radial-gradient(ellipse at 50% 18%, rgba(255, 255, 255, 0.13), transparent 34%),
+      radial-gradient(ellipse at 50% 82%, rgba(255, 255, 255, 0.14), transparent 44%),
       radial-gradient(ellipse at 24% 86%, rgba(213, 43, 63, 0.14), transparent 34%),
       radial-gradient(ellipse at 76% 84%, rgba(61, 125, 255, 0.16), transparent 34%);
     filter: blur(24px);
@@ -249,6 +251,7 @@
       radial-gradient(ellipse at 50% 100%, rgba(246, 213, 122, 0.24), transparent 62%),
       radial-gradient(ellipse at 24% 92%, rgba(213, 43, 63, 0.18), transparent 52%),
       radial-gradient(ellipse at 76% 92%, rgba(61, 125, 255, 0.18), transparent 52%);
+    opacity: 0.92;
   }
 
   .intro-stage-glow::before {
@@ -284,56 +287,100 @@
     z-index: 2;
   }
 
+  .intro-light-rig::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: clamp(34px, 6.6vh, 74px);
+    width: min(86vw, 980px);
+    height: 22px;
+    border-block: 1px solid rgba(255, 255, 255, 0.16);
+    background:
+      repeating-linear-gradient(120deg, rgba(255, 255, 255, 0.18) 0 2px, transparent 2px 28px),
+      repeating-linear-gradient(60deg, rgba(255, 255, 255, 0.12) 0 2px, transparent 2px 28px),
+      linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+    box-shadow:
+      0 0 24px rgba(255, 255, 255, 0.12),
+      0 18px 52px rgba(246, 213, 122, 0.08);
+    opacity: 0;
+    transform: translateX(-50%) translateY(-14px);
+    animation: introRigDrop 820ms ease 520ms forwards;
+  }
+
+  .intro-light-rig::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: clamp(58px, 10vh, 112px);
+    width: min(66vw, 660px);
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(246, 213, 122, 0.42), rgba(255, 255, 255, 0.42), rgba(61, 125, 255, 0.36), transparent);
+    opacity: 0;
+    transform: translateX(-50%);
+    animation: introRigGlow 900ms ease 760ms forwards;
+  }
+
   .intro-stage-light {
     position: absolute;
     left: var(--light-x);
-    bottom: 12vh;
-    width: 14px;
-    height: 14px;
+    top: clamp(38px, 7vh, 78px);
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: var(--light-color);
     box-shadow:
       0 0 16px var(--light-color),
       0 0 34px var(--light-color);
-    transform: translateX(-50%);
-    animation: introLensPulse 1700ms ease-in-out var(--light-delay) infinite alternate;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+    animation:
+      introLightDrop 760ms ease calc(620ms + var(--light-delay)) forwards,
+      introLensPulse 1700ms ease-in-out calc(1380ms + var(--light-delay)) infinite alternate;
   }
 
   .intro-stage-light::before {
     content: "";
     position: absolute;
     left: 50%;
-    top: 7px;
-    width: 34px;
-    height: 16px;
-    border-radius: 4px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(3, 6, 24, 0.72));
+    top: -8px;
+    width: 32px;
+    height: 18px;
+    border-radius: 4px 4px 10px 10px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(3, 6, 24, 0.78)),
+      rgba(2, 3, 20, 0.74);
     transform: translateX(-50%);
-    box-shadow: inset 0 1px rgba(255, 255, 255, 0.22);
+    box-shadow:
+      inset 0 1px rgba(255, 255, 255, 0.22),
+      0 8px 18px rgba(0, 0, 0, 0.28);
   }
 
   .intro-stage-light i {
     position: absolute;
     left: 50%;
-    bottom: 9px;
-    width: clamp(130px, 18vw, 260px);
-    height: 82vh;
-    background: linear-gradient(0deg, var(--light-color), transparent 72%);
-    clip-path: polygon(47% 100%, 53% 100%, 100% 0, 0 0);
-    filter: blur(1.6px);
+    top: 9px;
+    width: clamp(150px, 20vw, 280px);
+    height: 88vh;
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--light-color) 82%, white 18%), transparent 74%),
+      radial-gradient(ellipse at 50% 98%, var(--light-color), transparent 58%);
+    clip-path: polygon(47% 0, 53% 0, 100% 100%, 0 100%);
+    filter: blur(1.3px);
     mix-blend-mode: screen;
-    opacity: 0.2;
-    transform: translateX(-50%) rotate(var(--beam-angle)) scaleY(0.78);
-    transform-origin: 50% 100%;
-    animation: introBeamSweep 3200ms ease-in-out var(--light-delay) infinite;
+    opacity: 0;
+    transform: translateX(-50%) rotate(var(--beam-angle)) scaleY(0.64);
+    transform-origin: 50% 0;
+    animation:
+      introBeamIgnite 780ms ease calc(900ms + var(--light-delay)) forwards,
+      introBeamSweep 3200ms ease-in-out calc(1680ms + var(--light-delay)) infinite;
   }
 
   .intro-stage-light i::after {
     content: "";
     position: absolute;
     inset: 0 42%;
-    background: linear-gradient(0deg, rgba(255, 255, 255, 0.38), transparent 66%);
-    opacity: 0.45;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent 62%);
+    opacity: 0.5;
   }
 
   .intro-crowd {
@@ -400,7 +447,7 @@
   .intro-fireworks {
     position: absolute;
     inset: 0;
-    z-index: 4;
+    z-index: 3;
     pointer-events: none;
     animation: introFireworksOut 820ms ease 1280ms forwards;
   }
@@ -449,7 +496,7 @@
   .intro-official-mark {
     position: absolute;
     z-index: 5;
-    width: min(64vw, 520px);
+    width: min(60vw, 500px);
     max-height: 30vh;
     object-fit: contain;
     opacity: 0;
@@ -461,13 +508,15 @@
   .intro-emblem {
     position: relative;
     z-index: 6;
-    width: 156px;
-    height: 156px;
+    width: clamp(140px, 16vw, 172px);
+    height: clamp(140px, 16vw, 172px);
     display: grid;
     place-items: center;
     opacity: 0;
     transform: scale(0.94);
-    filter: drop-shadow(0 18px 60px rgba(255, 255, 255, 0.1));
+    filter:
+      drop-shadow(0 18px 60px rgba(255, 255, 255, 0.1))
+      drop-shadow(0 26px 70px rgba(246, 213, 122, 0.14));
     animation: introEmblemIn 560ms ease 1480ms forwards;
   }
 
@@ -565,14 +614,39 @@
     50% { transform: translate3d(2%, -2%, 0) scale(1.04); }
   }
 
+  @keyframes introRigDrop {
+    to {
+      opacity: 0.68;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  @keyframes introRigGlow {
+    to { opacity: 0.82; }
+  }
+
+  @keyframes introLightDrop {
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  @keyframes introBeamIgnite {
+    to {
+      opacity: 0.22;
+      transform: translateX(-50%) rotate(var(--beam-angle)) scaleY(0.86);
+    }
+  }
+
   @keyframes introBeamSweep {
     0%, 100% {
-      transform: translateX(-50%) rotate(var(--beam-angle)) scaleY(0.78);
-      opacity: 0.18;
+      transform: translateX(-50%) rotate(var(--beam-angle)) scaleY(0.84);
+      opacity: 0.2;
     }
     50% {
-      transform: translateX(-50%) rotate(var(--beam-alt)) scaleY(1.03);
-      opacity: 0.28;
+      transform: translateX(-50%) rotate(var(--beam-alt)) scaleY(1.05);
+      opacity: 0.32;
     }
   }
 
