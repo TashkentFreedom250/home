@@ -32,42 +32,42 @@ export function getContracts() {
     {
       id: 'venue',
       name: 'Venue',
-      status: 'in-progress',
-      statusLabel: 'Contract Out',
+      status: 'signed',
+      statusLabel: 'Signed',
       icon: '🏟️',
-      cost: '10 units',
+      cost: '$10k',
       description: 'Uzexpocentre outdoor terrace & grounds — exclusive use, setup days included',
-      nextStep: 'Awaiting signed contract from venue',
+      nextStep: 'Coordinate setup days with event management team',
     },
     {
       id: 'av-stage',
       name: 'AV & Stage',
-      status: 'awarded',
-      statusLabel: 'Awarded',
+      status: 'signed',
+      statusLabel: 'Signed',
       icon: '🎛️',
-      cost: '27 units',
+      cost: '$27k',
       description: 'Stage, LED screens, PA system, lighting rig, DJ booth',
       awardDate: '2026-04-10',
-      nextStep: 'Finalize stage design & lighting plot — due Apr 25',
+      nextStep: 'Finalize stage design & lighting plot',
     },
     {
       id: 'event-mgmt',
       name: 'Event Management',
-      status: 'in-progress',
-      statusLabel: 'Quoted',
+      status: 'signed',
+      statusLabel: 'Signed',
       icon: '📋',
-      cost: '37 units',
+      cost: '$38k',
       description: 'Full production — tent build, staffing, décor, day-of management',
-      nextStep: 'Hash out details with team this week',
+      nextStep: 'Kickoff meeting — full scope review',
     },
     {
       id: 'power',
       name: 'Power',
       status: 'awarded',
-      statusLabel: 'Settled',
+      statusLabel: 'Agreed',
       icon: '⚡',
-      cost: '1 unit',
-      description: 'Negotiated and included in venue agreement',
+      cost: 'Included',
+      description: 'Electrical company agreed to supply 400 kW to the venue',
       awardDate: '2026-04-18',
       nextStep: 'Confirm technical specs with AV team',
     },
@@ -75,11 +75,21 @@ export function getContracts() {
       id: 'artists',
       name: 'Artists',
       status: 'in-progress',
-      statusLabel: '6 of 8 Confirmed',
+      statusLabel: 'Follow-up Mon',
       icon: '🎵',
       cost: 'TBD',
-      description: '6 artists confirmed and ready. 2 unavailable — sourcing replacements.',
-      nextStep: 'Sign contracts for all confirmed artists; find 2 replacements',
+      description: 'Artist management follow-up on Monday to check for any outstanding issues.',
+      nextStep: 'Follow up with artist management Monday May 4',
+    },
+    {
+      id: 'decor',
+      name: 'Décor',
+      status: 'in-progress',
+      statusLabel: 'Planning',
+      icon: '🎨',
+      cost: '~$13–14k',
+      description: 'Check in with décor team to assess current progress and confirm design direction.',
+      nextStep: 'Check in with décor team this week',
     },
   ]
 }
@@ -87,15 +97,31 @@ export function getContracts() {
 // ── Budget ───────────────────────────────────────────────────────────────────
 
 export function getBudget() {
+  const sources = [
+    { label: 'Current-year fundraising', amount: 80, type: 'raised',    note: 'Sponsor commitments + cash raise' },
+    { label: 'Embassy carryover',        amount: 40, type: 'carryover', note: 'Unused from prior fiscal year'    },
+  ]
+  const breakdown = [
+    { label: 'Venue',            amount: 10, status: 'signed'   },
+    { label: 'AV & Stage',       amount: 27, status: 'signed'   },
+    { label: 'Event Management', amount: 38, status: 'signed'   },
+    { label: 'Décor',            amount: 14, status: 'planning' },
+    { label: 'Alcohol',          amount: 2,  status: 'planning' },
+    { label: 'Misc',             amount: 5,  status: 'planning' },
+  ]
+  const total      = sources.reduce((s, x) => s + x.amount, 0)
+  const committed  = breakdown.filter(x => x.status === 'signed').reduce((s, x) => s + x.amount, 0)
+  const planned    = breakdown.filter(x => x.status === 'planning').reduce((s, x) => s + x.amount, 0)
+  const remaining  = Math.max(0, total - committed - planned)
+
   return {
-    available: 65,
-    note: 'Includes carry-forward from prior year. Figures in budget units.',
-    breakdown: [
-      { label: 'Venue',            amount: 10, status: 'pending'  },
-      { label: 'AV & Stage',       amount: 27, status: 'awarded'  },
-      { label: 'Event Management', amount: 37, status: 'quoted'   },
-      { label: 'Power',            amount: 1,  status: 'awarded'  },
-    ],
+    sources,
+    breakdown,
+    total,
+    committed,
+    planned,
+    remaining,
+    note: 'All figures in USD thousands.',
   }
 }
 
@@ -105,40 +131,45 @@ export function getStats() {
   const diff = Math.max(0, TARGET_DATE - new Date())
   const days = Math.floor(diff / 86_400_000)
   return {
-    attendance: { value: '2,000+', change: 'Expected guests'      },
-    contracts:  { value: '2 of 5', change: 'Contracts settled'    },
-    daysLeft:   { value: String(days), change: 'Days to showtime'  },
-    budget:     { value: '~65',    change: 'Units available'       },
+    attendance: { value: '2,000+',     change: 'Expected guests'      },
+    contracts:  { value: '4 of 6',     change: 'Contracts settled'    },
+    daysLeft:   { value: String(days), change: 'Days to showtime'     },
+    budget:     { value: '$120k',      change: 'Mission funding'      },
   }
 }
 
 // ── Progress / Workstreams ───────────────────────────────────────────────────
 
 export function getProgress() {
+  const initiatives = [
+    { id: 1,  name: 'AV & Stage',             progress: 80, status: 'on-track', owner: 'AV Contractor',  deadline: 'Jun 8',  note: 'Contract signed. Stage design & lighting plot next.' },
+    { id: 2,  name: 'Venue',                   progress: 75, status: 'on-track', owner: 'Chair',          deadline: 'Done',   note: 'Contract signed at $10k. Setup days locked in.' },
+    { id: 3,  name: 'Event Management',        progress: 75, status: 'on-track', owner: 'Chair',          deadline: 'Done',   note: 'Contract signed at $38k. Kickoff meeting next.' },
+    { id: 4,  name: 'Artists & Entertainment', progress: 65, status: 'on-track', owner: 'Events Team',    deadline: 'May 4',  note: '6 of 8 confirmed. Follow-up with artist mgmt Monday.' },
+    { id: 5,  name: 'Power',                   progress: 90, status: 'ahead',    owner: 'Chair',          deadline: 'Done',   note: 'Electrical company agreed to supply 400 kW.' },
+    { id: 6,  name: 'Program Rundown',         progress: 25, status: 'at-risk',  owner: 'Chair',          deadline: 'May 10', note: 'Draft needed for Ambassador review.' },
+    { id: 7,  name: 'Guest List & CRM',        progress: 15, status: 'at-risk',  owner: 'Protocol Team',  deadline: 'May 25', note: 'VIP/VVIP list compilation just starting.' },
+    { id: 8,  name: 'Food & Catering',         progress: 60, status: 'on-track', owner: 'Catering Team',  deadline: 'May 25', note: 'KFC & Coca-Cola confirmed. Uzbek station TBD.' },
+    { id: 9,  name: 'Décor & Branding',        progress: 35, status: 'on-track', owner: 'Décor Team',     deadline: 'Jun 6',  note: 'Planning stage. Budget ~$13–14k. Check in this week.' },
+    { id: 10, name: 'Security & Logistics',    progress: 20, status: 'on-track', owner: 'RSO',            deadline: 'Jun 8',  note: 'RSO meeting to be scheduled.' },
+  ]
+  const overall = Math.round(
+    initiatives.reduce((sum, x) => sum + x.progress, 0) / initiatives.length
+  )
+
   return {
-    overall: 38,
-    initiatives: [
-      { id: 1,  name: 'AV & Stage',             progress: 75, status: 'ahead',    owner: 'AV Contractor',  deadline: 'Jun 8',  note: 'Contract awarded. Design & lighting plot next.' },
-      { id: 2,  name: 'Venue',                   progress: 40, status: 'on-track', owner: 'Chair',          deadline: 'Apr 25', note: 'Contract out — awaiting signature.' },
-      { id: 3,  name: 'Event Management',        progress: 30, status: 'on-track', owner: 'Chair',          deadline: 'Apr 25', note: 'Quoted at 37 units. Detailing scope this week.' },
-      { id: 4,  name: 'Artists & Entertainment', progress: 65, status: 'on-track', owner: 'Events Team',    deadline: 'Apr 30', note: '6 of 8 confirmed. 2 replacements needed.' },
-      { id: 5,  name: 'Power',                   progress: 85, status: 'ahead',    owner: 'Venue / Chair',  deadline: 'Done',   note: 'Negotiated with venue. 1 unit.' },
-      { id: 6,  name: 'Program Rundown',         progress: 10, status: 'at-risk',  owner: 'Chair',          deadline: 'May 25', note: 'Not started. Draft needed by end of Week 3.' },
-      { id: 7,  name: 'Guest List & CRM',        progress: 5,  status: 'at-risk',  owner: 'Protocol Team',  deadline: 'May 25', note: 'Not started. VIP/VVIP list must begin this week.' },
-      { id: 8,  name: 'Food & Catering',         progress: 40, status: 'on-track', owner: 'Catering Team',  deadline: 'May 25', note: 'KFC & Coca-Cola confirmed. Uzbek station TBD.' },
-      { id: 9,  name: 'Décor & Branding',        progress: 20, status: 'on-track', owner: 'Design Team',    deadline: 'Jun 6',  note: 'Pending Event Management award to proceed.' },
-      { id: 10, name: 'Security & Logistics',    progress: 10, status: 'on-track', owner: 'RSO',            deadline: 'Jun 8',  note: 'RSO meeting to be scheduled.' },
-    ],
+    overall,
+    initiatives,
     milestones: [
-      { id: 1, name: 'AV & Stage contract awarded',        date: '2026-04-10', status: 'completed' },
-      { id: 2, name: 'KFC & Coca-Cola agreements signed',  date: '2026-04-01', status: 'completed' },
-      { id: 3, name: 'Power negotiated with venue',        date: '2026-04-18', status: 'completed' },
-      { id: 4, name: '6 of 8 artists confirmed',          date: '2026-04-18', status: 'completed' },
-      { id: 5, name: 'Venue contract signed',              date: '2026-04-25', status: 'upcoming'  },
-      { id: 6, name: 'Event Management contract awarded',  date: '2026-04-25', status: 'upcoming'  },
-      { id: 7, name: 'All artist contracts signed',        date: '2026-04-30', status: 'upcoming'  },
-      { id: 8, name: 'Program rundown complete draft',     date: '2026-05-04', status: 'upcoming'  },
-      { id: 9, name: 'All-vendor production meeting',      date: '2026-05-08', status: 'upcoming'  },
+      { id: 1,  name: 'AV & Stage contract signed',        date: '2026-04-10', status: 'completed' },
+      { id: 2,  name: 'KFC & Coca-Cola agreements signed', date: '2026-04-01', status: 'completed' },
+      { id: 3,  name: 'Power agreed — 400 kW from utility',date: '2026-04-18', status: 'completed' },
+      { id: 4,  name: '6 of 8 artists confirmed',          date: '2026-04-18', status: 'completed' },
+      { id: 5,  name: 'Venue contract signed',             date: '2026-04-25', status: 'completed' },
+      { id: 6,  name: 'Event Management contract signed',  date: '2026-04-28', status: 'completed' },
+      { id: 7,  name: 'All artist contracts signed',       date: '2026-05-10', status: 'upcoming'  },
+      { id: 8,  name: 'Program rundown complete draft',    date: '2026-05-10', status: 'upcoming'  },
+      { id: 9,  name: 'All-vendor production meeting',     date: '2026-05-08', status: 'upcoming'  },
       { id: 10, name: 'VIP guest list finalized',          date: '2026-05-25', status: 'upcoming'  },
       { id: 11, name: 'Full technical rehearsal',          date: '2026-06-07', status: 'upcoming'  },
       { id: 12, name: '🇺🇸 FREEDOM 250 — SHOWTIME',        date: '2026-06-10', status: 'upcoming'  },
@@ -293,12 +324,12 @@ export function getProgramRundown() {
 
 export function getActions() {
   return [
-    { id: 1, icon: '📋', priority: 'high',   done: false, title: 'Hash out Event Management details',  description: 'Finalize full scope — tent, staffing, décor, day-of logistics. Align on timeline.', cta: 'Meet with Team', deadline: 'Apr 25' },
-    { id: 2, icon: '📨', priority: 'high',   done: false, title: 'CRM — Compile VIP Invite List',      description: 'Work with Protocol to build the VIP / VVIP guest list. Diplomats, officials, partners.', cta: 'Start List',     deadline: 'May 1'  },
-    { id: 3, icon: '✍️', priority: 'high',   done: false, title: 'Finalize All Contracts',             description: 'Venue, artists (6 confirmed), event management — all agreements signed and filed.', cta: 'Review Status',  deadline: 'Apr 30' },
-    { id: 4, icon: '🎵', priority: 'medium', done: false, title: 'Source 2 Replacement Artists',       description: '2 artists unavailable. Identify and confirm replacements to complete the lineup.', cta: 'Source Now',     deadline: 'Apr 30' },
-    { id: 5, icon: '🔒', priority: 'medium', done: false, title: 'Schedule RSO Security Meeting',      description: 'Coordinate with Regional Security Office — venue walk-through & safety plan.', cta: 'Schedule',       deadline: 'Apr 25' },
-    { id: 6, icon: '📝', priority: 'medium', done: false, title: 'Begin Program Rundown Draft',        description: 'First draft of minute-by-minute event flow. Required for Ambassador review by May 25.', cta: 'Start Draft',    deadline: 'May 4'  },
+    { id: 1,  icon: '🎵', priority: 'high',   done: false, title: 'Follow up with Artist Management',   description: 'Check Monday May 4 for any outstanding issues, contract status, or problems with the artist lineup.', deadline: 'May 4'  },
+    { id: 2,  icon: '🎖️', priority: 'high',   done: false, title: 'Follow up with Marine re: Color Guard', description: 'Confirm with Marine whether the color guard is confirmed and what is needed to finalize that piece.', deadline: 'May 4'  },
+    { id: 3,  icon: '🎨', priority: 'high',   done: false, title: 'Check in with Decor Team',            description: 'See how the decor is progressing. Budget targeting $13–14k. Confirm design direction and delivery schedule.', deadline: 'May 5'  },
+    { id: 4,  icon: '📨', priority: 'high',   done: false, title: 'CRM — Compile VIP Invite List',       description: 'Work with Protocol to build the VIP / VVIP guest list. Diplomats, officials, partners.', deadline: 'May 10' },
+    { id: 5,  icon: '📝', priority: 'medium', done: false, title: 'Begin Program Rundown Draft',         description: 'First draft of minute-by-minute event flow. Required for Ambassador review by May 25.', deadline: 'May 10' },
+    { id: 6,  icon: '🔒', priority: 'medium', done: false, title: 'Schedule RSO Security Meeting',       description: 'Coordinate with Regional Security Office — venue walk-through & safety plan.', deadline: 'May 8'  },
   ]
 }
 

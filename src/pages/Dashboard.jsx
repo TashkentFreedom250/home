@@ -50,7 +50,7 @@ export default function Dashboard() {
             <img src={freedomLogoGold} alt="Freedom 250" />
           </h1>
           <p className="event-line">
-            Music, food, fireworks, and community at {event.location}.
+            Music, food, and community at {event.location}.
           </p>
           <CountdownPills time={time} />
           <div className="event-actions">

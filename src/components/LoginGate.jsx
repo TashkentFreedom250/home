@@ -63,15 +63,15 @@ export default function LoginGate({ children }) {
 
           <div className="mock-board" style={{ marginTop: 30 }}>
             {[
-              ['Music', 'Live stage'],
-              ['Food', 'Sponsor court'],
-              ['Finale', 'Fireworks'],
-            ].map(([title, meta]) => (
+              ['Music',  'Headliner set',        '45-min main performance + opener'],
+              ['Food',   'KFC + Coca-Cola',      'Confirmed sponsor partners'],
+              ['Finale', 'Freedom 250 Toast',    'Anniversary moment + DJ open floor'],
+            ].map(([title, meta, detail]) => (
               <div className="mock-lane" key={title}>
                 <div className="mock-lane-title">{title}</div>
                 <div className="mock-card" style={{ marginBottom: 0 }}>
                   <strong>{meta}</strong>
-                  <small>Synced to the active planning workspace.</small>
+                  <small>{detail}</small>
                 </div>
               </div>
             ))}
